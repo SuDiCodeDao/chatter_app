@@ -1,0 +1,26 @@
+import 'package:chatter_app/core/constants/page_route_constants.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../controllers/auth_controller.dart';
+import 'widgets/otp_page_body_widget.dart';
+
+class OTPInputPage extends StatelessWidget {
+  OTPInputPage({super.key});
+  final _authController = Get.find<AuthController>();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: InkWell(
+            onTap: () {
+              Get.toNamed(PageRouteConstants.login);
+            },
+            child: const Icon(Icons.arrow_back_ios, color: Colors.red)),
+      ),
+      body: OTPPageBodyWidget(authController: _authController),
+    );
+  }
+}

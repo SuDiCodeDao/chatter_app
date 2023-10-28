@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 
-import '../lib/app.dart';
+import 'package:chatter_app/app/app.dart';
 
 void main() {
   testWidgets('Test MainApp Widget', (WidgetTester tester) async {
