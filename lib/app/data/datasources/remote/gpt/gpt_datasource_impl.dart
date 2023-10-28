@@ -36,7 +36,7 @@ class GptDataSourceImpl extends GptDataSource {
 
         return MessageModel(
           content: jsonResponse['choices'][0]['text'],
-          sender: 'gpt',
+          role: 'gpt',
           timeStamp: DateTime.now().toLocal().toString(),
         );
       } else {

@@ -21,12 +21,7 @@ class ConversationRepositoryImpl extends ConversationRepository {
       if (conversations.isEmpty) {
         throw Exception('Không tìm thấy cuộc trò chuyện');
       }
-      for (final conversation in conversations) {
-        final lastMessage = await firebaseMessageDataSource
-            .getLastMessageInConversation(conversation!.id!);
-        conversation.lastMessage = lastMessage?.content ?? 'Không có tin nhắn';
-        conversation.lastMessageTime = lastMessage?.timeStamp ?? '';
-      }
+
       return conversations.map((conversationModel) {
         return conversationModel!.toEntity();
       }).toList();

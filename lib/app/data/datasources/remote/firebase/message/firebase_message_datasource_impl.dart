@@ -32,12 +32,19 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
   }
 
   @override
-  Future<List<MessageModel>> getMessagesInConversation(
+  Future<List<MessageModel>?> getMessagesInConversation(
       String conversationId) async {
-    final querySnapshot = await firestore
+    final conversationRef =
+        firestore.collection('conversations').doc(conversationId);
+
+    final conversation = await conversationRef.get();
+    if (!conversation.exists) {
+      return null; //
+    }
+
+    final querySnapshot = await conversationRef
         .collection('messages')
-        .where('conversationId', isEqualTo: conversationId)
-        .orderBy('timestamp', descending: true)
+        .orderBy('timeStamp', descending: true)
         .get();
 
     final messages = querySnapshot.docs
@@ -52,10 +59,11 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
       String conversationId) async {
     try {
       final querySnapshot = await firestore
+          .collection('conversations')
+          .doc(conversationId)
           .collection('messages')
-          .where('conversationId', isEqualTo: conversationId)
-          .orderBy('timestamp', descending: true)
           .limit(1)
+          .orderBy('timeStamp', descending: true)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         final lastMessage =
@@ -66,8 +74,7 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
       }
     } catch (e) {
       print('Lỗi: $e');
-      // Xử lý lỗi hoặc hiển thị thông báo lỗi cho người dùng
-      return null; // Hoặc trả về giá trị mặc định
+      return null;
     }
   }
 
@@ -92,7 +99,6 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
   @override
   Future<void> sendMessage(MessageModel messageModel) async {
     final collectionRef = firestore.collection('messages');
-    final newMessage = await collectionRef.add(messageModel.toMap());
-    messageModel.id = newMessage.id;
+    await collectionRef.doc(messageModel.id).set(messageModel.toMap());
   }
 }

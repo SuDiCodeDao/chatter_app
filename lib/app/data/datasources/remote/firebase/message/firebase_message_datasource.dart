@@ -1,7 +1,7 @@
 import '../../../../models/message_model.dart';
 
 abstract class FirebaseMessageDataSource {
-  Future<List<MessageModel>> getMessagesInConversation(String conversationId);
+  Future<List<MessageModel>?> getMessagesInConversation(String conversationId);
 
   Future<MessageModel> getMessage(String messageId);
 

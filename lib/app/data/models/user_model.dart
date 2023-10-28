@@ -1,18 +1,24 @@
-
-
 import '../../domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
   UserModel(
-      {super.uid, super.email, super.displayName, super.phone, super.photoUrl});
+      {super.uid,
+      super.email,
+      super.displayName,
+      super.photoUrl,
+      super.phone,
+      super.conversationIds});
 
   factory UserModel.fromMap(Map<String, dynamic> data) {
     return UserModel(
       uid: data['uid'] ?? '',
       email: data['email'] ?? '',
       displayName: data['displayName'] ?? '',
-      phone: data['phone'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
+      phone: data['phone'] ?? '',
+      conversationIds: (data['conversationIds'] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList(),
     );
   }
 
@@ -21,8 +27,9 @@ class UserModel extends UserEntity {
       'uid': uid,
       'email': email,
       'displayName': displayName,
-      'phone': phone,
       'photoUrl': photoUrl,
+      'phone': phone,
+      'conversationIds': conversationIds ?? []
     };
   }
 
@@ -31,16 +38,17 @@ class UserModel extends UserEntity {
             uid: userEntity.uid,
             email: userEntity.email,
             displayName: userEntity.displayName,
+            photoUrl: userEntity.photoUrl,
             phone: userEntity.phone,
-            photoUrl: userEntity.photoUrl);
+            conversationIds: userEntity.conversationIds);
 
   UserEntity toEntity() {
     return UserEntity(
-      uid: uid,
-      email: email,
-      displayName: displayName,
-      phone: phone,
-      photoUrl: photoUrl,
-    );
+        uid: uid,
+        email: email,
+        displayName: displayName,
+        photoUrl: photoUrl,
+        phone: phone,
+        conversationIds: conversationIds);
   }
 }

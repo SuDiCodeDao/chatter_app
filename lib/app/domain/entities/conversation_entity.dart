@@ -1,25 +1,20 @@
-import 'dart:math';
+import 'package:chatter_app/app/domain/entities/message_entity.dart';
 
 class ConversationEntity {
   String? id;
   String? name;
   String? userId;
-
+  List<MessageEntity>? messages;
+  String? createAt;
   String? lastMessage;
   String? lastMessageTime;
 
-  ConversationEntity({
-    this.id,
-    this.name,
-    this.lastMessage,
-    this.lastMessageTime,
-    this.userId,
-  });
-
-  ConversationEntity.generateRandomId(String userId) {
-    final random = Random();
-    id = random.nextInt(1000000).toString();
-    name = 'Cuộc trò chuyện không có tiêu đề';
-    userId = userId;
-  }
+  ConversationEntity(
+      {this.id,
+      this.name,
+      this.userId,
+      this.messages,
+      this.lastMessage,
+      this.lastMessageTime,
+      this.createAt});
 }

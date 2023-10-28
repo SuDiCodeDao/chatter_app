@@ -1,16 +1,17 @@
+import 'package:chatter_app/core/constants/message_reaction.dart';
+
 class MessageEntity {
   String? id;
   String? content;
-  String? sender;
+  String? role;
   String? timeStamp;
-  String? reaction;
-  String? conversationId;
+  MessageReaction? reaction;
 
-  MessageEntity(
-      {this.id,
-      this.content,
-      this.sender,
-      this.timeStamp,
-      this.reaction,
-      this.conversationId});
+  MessageEntity({
+    this.id,
+    this.content,
+    this.role,
+    this.timeStamp,
+    this.reaction,
+  });
 }
