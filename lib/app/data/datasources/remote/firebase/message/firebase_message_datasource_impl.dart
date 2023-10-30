@@ -8,73 +8,83 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
 
   FirebaseMessageDataSourceImpl({required this.firestore});
   @override
-  Future<MessageModel> deleteMessage(String messageId) async {
-    final docRef = firestore.collection('messages').doc(messageId);
-    final deletedMessage = await docRef.get();
-    await docRef.delete();
-    return MessageModel.fromMap(deletedMessage.data()!);
+  Future<MessageModel> deleteMessage(
+      String conversationId, String messageId) async {
+    final conversationRef =
+        firestore.collection('conversations').doc(conversationId);
+    final messageData = (await conversationRef.get()).data();
+    final List<Map<String, dynamic>> messages =
+        List.from(messageData?['messages']);
+
+    final int indexToDelete =
+        messages.indexWhere((message) => message['id'] == messageId);
+    if (indexToDelete != -1) {
+      messages.removeAt(indexToDelete);
+
+      await conversationRef.update({'messages': messages});
+    } else {
+      throw Exception('Không tìm thấy tin nhắn để xóa');
+    }
+
+    return MessageModel.fromMap(messageData!);
   }
 
   @override
-  Future<MessageModel> getMessage(String messageId) async {
-    final docRef = firestore.collection('messages').doc(messageId);
-    final message = await docRef.get();
-    return MessageModel.fromMap(message.data()!);
-  }
+  Future<MessageModel> getMessage(
+      String conversationId, String messageId) async {
+    final conversationRef =
+        firestore.collection('conversations').doc(conversationId);
+    final messageData = (await conversationRef.get()).data();
 
-  @override
-  Future<List<MessageModel>> getMessages() async {
-    final querySnapshot = await firestore.collection('messages').get();
-    final messages = querySnapshot.docs
-        .map((doc) => MessageModel.fromMap(doc.data()))
-        .toList();
-    return messages;
+    final message = messageData?['messages'].firstWhere(
+        (message) => message['id'] == messageId,
+        orElse: () => null);
+    if (message != null) {
+      return MessageModel.fromMap(message);
+    } else {
+      throw Exception('Không tìm thấy tin nhắn');
+    }
   }
 
   @override
   Future<List<MessageModel>?> getMessagesInConversation(
       String conversationId) async {
-    final conversationRef =
-        firestore.collection('conversations').doc(conversationId);
+    if (conversationId.isNotEmpty) {
+      final conversationRef =
+          firestore.collection('conversations').doc(conversationId);
 
-    final conversation = await conversationRef.get();
-    if (!conversation.exists) {
-      return null; //
+      final conversationData = (await conversationRef.get()).data();
+      if (conversationData != null) {
+        final List<Map<String, dynamic>> messages =
+            List.from(conversationData['messages']);
+        messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
+
+        final messageModels =
+            messages.map((message) => MessageModel.fromMap(message)).toList();
+
+        return messageModels;
+      }
+    } else {
+      throw Exception('conversationId không được rỗng');
     }
-
-    final querySnapshot = await conversationRef
-        .collection('messages')
-        .orderBy('timeStamp', descending: true)
-        .get();
-
-    final messages = querySnapshot.docs
-        .map((doc) => MessageModel.fromMap(doc.data()))
-        .toList();
-
-    return messages;
+    return null;
   }
 
   @override
   Future<MessageModel?> getLastMessageInConversation(
       String conversationId) async {
-    try {
-      final querySnapshot = await firestore
-          .collection('conversations')
-          .doc(conversationId)
-          .collection('messages')
-          .limit(1)
-          .orderBy('timeStamp', descending: true)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        final lastMessage =
-            MessageModel.fromMap(querySnapshot.docs.first.data());
-        return lastMessage;
-      } else {
-        throw Exception('Không tìm thấy tin nhắn cuối cùng');
-      }
-    } catch (e) {
-      print('Lỗi: $e');
-      return null;
+    final conversationRef =
+        firestore.collection('conversations').doc(conversationId);
+
+    final messageData = (await conversationRef.get()).data();
+    final List<Map<String, dynamic>> messages =
+        List.from(messageData?['messages']);
+
+    if (messages.isNotEmpty) {
+      messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
+      return MessageModel.fromMap(messages.first);
+    } else {
+      throw Exception('Không tìm thấy tin nhắn cuối cùng');
     }
   }
 
@@ -85,20 +95,51 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
   }
 
   @override
-  Future<MessageModel> reactToMessage(String messageId, String reactionType) {
+  Future<MessageModel> reactToMessage(
+      String conversationId, String messageId, String reactionType) {
     // TODO: implement reactToMessage
     throw UnimplementedError();
   }
 
   @override
-  Future<MessageModel> searchMessages(String query) {
-    // TODO: implement searchMessages
-    throw UnimplementedError();
+  Future<List<MessageModel>> searchMessages(
+      String conversationId, String query) async {
+    final conversationRef =
+        firestore.collection('conversations').doc(conversationId);
+
+    final messageData = (await conversationRef.get()).data();
+    final List<Map<String, dynamic>> messages =
+        List.from(messageData?['messages'] ?? []);
+
+    final List<MessageModel> searchResults = [];
+
+    for (final message in messages) {
+      final text = message['content'].toString().toLowerCase();
+
+      if (text.contains(query.toLowerCase())) {
+        searchResults.add(MessageModel.fromMap(message));
+      }
+    }
+
+    return searchResults;
   }
 
   @override
-  Future<void> sendMessage(MessageModel messageModel) async {
-    final collectionRef = firestore.collection('messages');
-    await collectionRef.doc(messageModel.id).set(messageModel.toMap());
+  Future<void> sendMessage(
+      String conversationId, MessageModel messageModel) async {
+    if (conversationId.isNotEmpty) {
+      final collectionRef =
+          firestore.collection('conversations').doc(conversationId);
+      final messageData = messageModel.toMap();
+      final conversationData = (await collectionRef.get()).data();
+      final List<Map<String, dynamic>> messages =
+          List.from(conversationData?['messages'] ?? []);
+      messages.add(messageData);
+      await collectionRef.update({'messages': messages});
+      await collectionRef.update({
+        'lastMessage': messageData['content'],
+        'lastMessageTime': messageData['timeStamp']
+      });
+    }
   }
 }

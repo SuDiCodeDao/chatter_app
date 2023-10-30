@@ -21,7 +21,7 @@ class MainApp extends StatelessWidget {
         return SafeArea(
           child: GetMaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
+            title: 'Chatter Bot',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/function_constants.dart';
+
 class ConversationItemWidget extends StatelessWidget {
   final String title;
   final String lastMessage;
@@ -14,28 +16,33 @@ class ConversationItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final lastMessageTimeDateTime = DateTime.parse(lastMessageTime);
-
-    String formattedTime;
-    if (lastMessageTimeDateTime.year != now.year ||
-        lastMessageTimeDateTime.month != now.month ||
-        lastMessageTimeDateTime.day != now.day) {
-      formattedTime =
-          '${lastMessageTimeDateTime.day}/${lastMessageTimeDateTime.month}/${lastMessageTimeDateTime.year} ${lastMessageTimeDateTime.hour}:${lastMessageTimeDateTime.minute}';
-    } else {
-      formattedTime =
-          '${lastMessageTimeDateTime.hour}:${lastMessageTimeDateTime.minute}';
-    }
-
+    final formattedTime = formatLastMessageTime(lastMessageTime);
     return Card(
+      borderOnForeground: true,
+      margin: const EdgeInsets.all(10.0),
+      elevation: 4,
+      color: Colors.lightBlueAccent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0), // Đặt bo góc
+      ),
       child: ListTile(
-        title: Text(title),
+        title: Text(
+          title,
+        ),
         trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
         subtitle: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [Text(lastMessage), Text(formattedTime)],
+          children: [
+            Expanded(
+              child: Text(
+                lastMessage,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                softWrap: true,
+              ),
+            ),
+            Text(formattedTime)
+          ],
         ),
       ),
     );

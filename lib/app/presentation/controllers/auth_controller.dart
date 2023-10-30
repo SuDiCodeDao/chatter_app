@@ -17,7 +17,7 @@ class AuthController extends GetxController {
   SendOtpUseCase? _sendOtpUseCase;
   VerifyOTPUseCase? _verifyOTPUseCase;
   CheckLoginUseCase? _checkLoginUseCase;
-  UserEntity userEntity = UserEntity();
+  Rx<UserEntity> userEntity = UserEntity().obs;
   final otpInputController = TextEditingController();
   final phoneInputController = TextEditingController();
   AuthController(
@@ -46,7 +46,7 @@ class AuthController extends GetxController {
   Future<UserEntity?> verifyOTP(String verificationCode) async {
     UserEntity? result = await _verifyOTPUseCase?.call(verificationCode);
     if (result != null) {
-      userEntity = result;
+      userEntity.value = result;
       isLoading.value = true;
       Get.toNamed(PageRouteConstants.home);
       isLoading.value = false;
@@ -65,7 +65,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> signInWithGoogle() async {
-    userEntity = await _signInWithGoogleUseCase!.call();
+    userEntity.value = await _signInWithGoogleUseCase!.call();
     Get.toNamed(PageRouteConstants.home);
   }
 }

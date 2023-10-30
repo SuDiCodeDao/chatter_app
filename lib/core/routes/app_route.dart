@@ -11,6 +11,6 @@ class AppRoute {
     GetPage(name: PageRouteConstants.login, page: () => SignInPage()),
     GetPage(name: PageRouteConstants.otp, page: () => OTPInputPage()),
     GetPage(name: PageRouteConstants.home, page: () => HomePage()),
-    GetPage(name: PageRouteConstants.chat, page: () => const ChatPage())
+    GetPage(name: PageRouteConstants.chat, page: () => ChatPage())
   ];
 }

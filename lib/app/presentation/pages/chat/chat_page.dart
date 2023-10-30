@@ -1,67 +1,42 @@
+import 'package:chatter_app/app/presentation/controllers/chat_controller.dart';
+import 'package:chatter_app/app/presentation/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+
+import 'widgets/chat_area_widget.dart';
 
 class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
-
+  ChatPage({super.key});
+  final ChatController _chatController = Get.find<ChatController>();
+  final HomeController _homeController = Get.find<HomeController>();
   @override
   Widget build(BuildContext context) {
+    final messages = _chatController.messages;
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.chevron_left),
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: () {
+            Get.back();
+          },
+        ),
       ),
       body: Column(
         children: [
-          Expanded(
-            child: ListView.separated(
-              shrinkWrap: true,
-              reverse: true,
-              physics: const ClampingScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.all(10),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 14,
-                              horizontal: 14,
-                            ),
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(20),
-                                topRight: Radius.circular(20),
-                              ),
-                            ),
-                            constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 2 / 3,
-                            ),
-                            child: const Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-              separatorBuilder: (_, i) =>
-                  const Padding(padding: EdgeInsets.only(top: 10)),
-              itemCount: 0,
-            ),
-          ),
+          ChatAreaWidget(
+              chatController: _chatController,
+              homeController: _homeController,
+              messages: messages),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 5.h),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _chatController.messageController,
+                    onSubmitted: (text) =>
+                        _chatController.messageController.text = text,
                     maxLines: null,
                     textInputAction: TextInputAction.newline,
                     decoration: InputDecoration(
@@ -77,7 +52,16 @@ class ChatPage extends StatelessWidget {
                   onPressed: () {},
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    final messageContent =
+                        _chatController.messageController.text.trim();
+                    if (messageContent.isNotEmpty) {
+                      _chatController.sendUserMessage(
+                          _homeController.selectedConversationId.value,
+                          messageContent);
+                      _chatController.messageController.text = '';
+                    }
+                  },
                   icon: const Icon(Icons.send),
                 ),
               ],

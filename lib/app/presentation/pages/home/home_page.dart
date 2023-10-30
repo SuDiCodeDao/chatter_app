@@ -8,30 +8,35 @@ import 'widgets/home_page_body_widget.dart';
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  final _authController = Get.find<AuthController>();
   final _homeController = Get.find<HomeController>();
+  final _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.blue,
-          leading: const Icon(Icons.menu),
+          centerTitle: true,
+          title: const Text('Chatter Bot'),
+          backgroundColor: Colors.lightBlueAccent,
+          leading: IconButton(
+            onPressed: () {},
+            icon: ClipOval(
+                child: Image.network(
+              _authController.userEntity.value.photoUrl!,
+              fit: BoxFit.cover,
+              width: 40,
+              height: 40,
+            )),
+          ),
           actions: [
-            IconButton(
-                onPressed: () {},
-                icon: _authController.userEntity.photoUrl != null
-                    ? Image.network(
-                        _authController.userEntity.photoUrl!,
-                        fit: BoxFit.cover,
-                      )
-                    : const Icon(Icons.person)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.search))
           ]),
       body: HomePageBodyWidget(
-          homeController: _homeController, authController: _authController),
+          homeController: _homeController,
+          userId: _authController.userEntity.value.uid!),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
             _homeController
-                .createAndNavigateToChat(_authController.userEntity.uid!);
+                .createAndNavigateToChat(_authController.userEntity.value.uid!);
           },
           child: const Icon(Icons.add)),
     );

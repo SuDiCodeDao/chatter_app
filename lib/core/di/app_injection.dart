@@ -1,10 +1,19 @@
 import 'package:chatter_app/app/data/datasources/remote/gpt/gpt_datasource.dart';
 import 'package:chatter_app/app/data/datasources/remote/gpt/gpt_datasource_impl.dart';
 import 'package:chatter_app/app/data/repositories/gpt_repository_impl.dart';
+import 'package:chatter_app/app/data/repositories/message_repository_impl.dart';
+import 'package:chatter_app/app/data/repositories/user_repository_impl.dart';
 import 'package:chatter_app/app/domain/repositories/gpt_repository.dart';
+import 'package:chatter_app/app/domain/repositories/message_repository.dart';
+import 'package:chatter_app/app/domain/repositories/user_repository.dart';
 import 'package:chatter_app/app/domain/usecases/auth/check_login_usecase.dart';
+import 'package:chatter_app/app/domain/usecases/auth/get_current_user_usecase.dart';
+import 'package:chatter_app/app/domain/usecases/auth/update_user_profile_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/chat/create_new_conversation_usecase.dart';
-import 'package:chatter_app/app/domain/usecases/gpt/get_gpt_response_usecase.dart';
+import 'package:chatter_app/app/domain/usecases/chat/load_messages_usecase.dart';
+import 'package:chatter_app/app/domain/usecases/chat/receive_chatbot_response_usecase.dart';
+import 'package:chatter_app/app/domain/usecases/chat/send_message_usecase.dart';
+import 'package:chatter_app/app/presentation/controllers/chat_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -39,7 +48,16 @@ class AppInjection {
         verifyOTPUseCase: Get.find<VerifyOTPUseCase>(),
         checkLoginUseCase: Get.find<CheckLoginUseCase>()));
     Get.lazyPut<HomeController>(() => HomeController(
-        loadConversationUseCase: Get.find<LoadConversationsUseCase>()));
+        loadConversationUseCase: Get.find<LoadConversationsUseCase>(),
+        getCurrentUserUseCase: Get.find<GetCurrentUserUseCase>(),
+        updateUserUseCase: Get.find<UpdateUserUseCase>(),
+        createNewConversationUseCase:
+            Get.find<CreateNewConversationUseCase>()));
+    Get.lazyPut<ChatController>(() => ChatController(
+        sendMessageUseCase: Get.find<SendMessageUseCase>(),
+        receiveChatbotResponseUseCase:
+            Get.find<ReceiveChatbotResponseUseCase>(),
+        loadMessagesUseCase: Get.find<LoadMessagesUseCase>()));
     //repositories
 
     Get.lazyPut<ConversationRepository>(() => ConversationRepositoryImpl(
@@ -49,10 +67,23 @@ class AppInjection {
     Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(
         firebaseAuthDataSource: Get.find<FirebaseAuthDataSource>(),
         firebaseUserDataSource: Get.find<FirebaseUserDataSource>()));
-    Get.lazyPut<GptRepository>(
-        () => GptRepositoryImpl(gptDataSource: Get.find<GptDataSource>()));
+    Get.lazyPut<UserRepository>(() => UserRepositoryImpl(
+        firebaseUserDataSource: Get.find<FirebaseUserDataSource>()));
+    Get.lazyPut<GptRepository>(() => GptRepositoryImpl(
+        gptDataSource: Get.find<GptDataSource>(),
+        firebaseMessageDataSource: Get.find<FirebaseMessageDataSource>()));
+    Get.lazyPut<MessageRepository>(() => MessageRepositoryImpl(
+        firebaseMessageDataSource: Get.find<FirebaseMessageDataSource>()));
 
     //usecase
+    Get.lazyPut<ReceiveChatbotResponseUseCase>(() =>
+        ReceiveChatbotResponseUseCase(
+            gptRepository: Get.find<GptRepository>()));
+    Get.lazyPut<UpdateUserUseCase>(() => UpdateUserUseCase(
+        userRepository: Get.find<UserRepository>(),
+        authRepository: Get.find<AuthRepository>()));
+    Get.lazyPut<GetCurrentUserUseCase>(() =>
+        GetCurrentUserUseCase(userRepository: Get.find<UserRepository>()));
     Get.lazyPut<CreateNewConversationUseCase>(() =>
         CreateNewConversationUseCase(
             conversationRepository: Get.find<ConversationRepository>()));
@@ -66,8 +97,11 @@ class AppInjection {
         () => SendOtpUseCase(authRepository: Get.find<AuthRepository>()));
     Get.lazyPut<VerifyOTPUseCase>(
         () => VerifyOTPUseCase(authRepository: Get.find<AuthRepository>()));
-    Get.lazyPut<GetGptResponseUseCase>(
-        () => GetGptResponseUseCase(gptRepository: Get.find<GptRepository>()));
+
+    Get.lazyPut<LoadMessagesUseCase>(() =>
+        LoadMessagesUseCase(messageRepository: Get.find<MessageRepository>()));
+    Get.lazyPut<SendMessageUseCase>(() =>
+        SendMessageUseCase(messageRepository: Get.find<MessageRepository>()));
 
     //data source
     Get.lazyPut<GptDataSource>(
@@ -82,7 +116,6 @@ class AppInjection {
     Get.lazyPut<FirebaseUserDataSource>(() =>
         FirebaseUserDataSourceImpl(firestore: Get.find<FirebaseFirestore>()));
 
-    //external
     final auth = FirebaseAuth.instance;
     final firestore = FirebaseFirestore.instance;
     Get.put(auth, permanent: true);
