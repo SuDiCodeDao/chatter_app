@@ -16,11 +16,7 @@ class HomeController extends GetxController {
 
   UpdateUserUseCase? _updateUserUseCase;
   final RxString selectedConversationId = "".obs;
-  HomeController(
-      {loadConversationUseCase,
-      createNewConversationUseCase,
-      getCurrentUserUseCase,
-      updateUserUseCase}) {
+  HomeController({loadConversationUseCase, createNewConversationUseCase, getCurrentUserUseCase, updateUserUseCase}) {
     _loadConversationsUseCase = loadConversationUseCase;
     _createNewConversationUseCase = createNewConversationUseCase;
     _getCurrentUserUseCase = getCurrentUserUseCase;
@@ -31,7 +27,7 @@ class HomeController extends GetxController {
   }
 
   Future<bool> loadConversations(String userId) async {
-    final result = await _loadConversationsUseCase?.call(userId);
+    final result = await _loadConversationsUseCase?.call('cIKzo1Op9UTdX6IJnYMEfjiC3mt2');
     if (result != null) {
       conversations.assignAll(result);
       update();
@@ -55,7 +51,7 @@ class HomeController extends GetxController {
         await _createNewConversationUseCase?.call(newConversation);
       }
     }
-    }
+  }
 
   void navigateToChat(ConversationEntity conversation) {
     if (conversation.id != null && conversation.id!.isNotEmpty) {

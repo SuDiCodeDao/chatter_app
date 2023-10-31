@@ -21,22 +21,19 @@ class HomePage extends StatelessWidget {
             onPressed: () {},
             icon: ClipOval(
                 child: Image.network(
-              _authController.userEntity.value.photoUrl!,
+              _authController.userEntity.value.photoUrl ?? '',
               fit: BoxFit.cover,
               width: 40,
               height: 40,
             )),
           ),
-          actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.search))
-          ]),
+          actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))]),
       body: HomePageBodyWidget(
           homeController: _homeController,
-          userId: _authController.userEntity.value.uid!),
+          userId: 'cIKzo1Op9UTdX6IJnYMEfjiC3mt2'), // _authController.userEntity.value.uid ?? ''),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            _homeController
-                .createAndNavigateToChat(_authController.userEntity.value.uid!);
+            _homeController.createAndNavigateToChat('cIKzo1Op9UTdX6IJnYMEfjiC3mt2');
           },
           child: const Icon(Icons.add)),
     );

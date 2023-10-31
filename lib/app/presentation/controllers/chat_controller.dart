@@ -12,8 +12,14 @@ class ChatController extends GetxController {
   final SendMessageUseCase _sendMessageUseCase;
   final ReceiveChatbotResponseUseCase _receiveChatbotResponseUseCase;
   final LoadMessagesUseCase _loadMessagesUseCase;
-  RxList<MessageEntity> messages = <MessageEntity>[].obs;
+  List<MessageEntity> messages = <MessageEntity>[].obs;
   final TextEditingController messageController = TextEditingController();
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadMessages('cIKzo1Op9UTdX6IJnYMEfjiC3mt2');
+  }
 
   ChatController(
       {required SendMessageUseCase sendMessageUseCase,
@@ -28,24 +34,20 @@ class ChatController extends GetxController {
     // print('Loaded messages: $loadedMessages');
     if (loadedMessages != null) {
       messages.assignAll(loadedMessages);
+      refresh();
+      update();
       //   messages.addAll(loadedMessages);
       //   //messages.insertAll(0, loadedMessages);
       //   //messages.addAllIf(loadedMessages != null, loadedMessages);
+    } else {
+      messages.assign(MessageEntity(
+          content: 'Xin chao toi la chatbot', role: 'gpt', timeStamp: DateTime.now().toLocal().toString()));
       refresh();
-      update();
-    }
-    if (loadedMessages == null) {
-      messages.add(MessageEntity(
-          content: 'Xin chao toi la chatbot',
-          role: 'gpt',
-          timeStamp: DateTime.now().toLocal().toString()));
-
       update();
     }
   }
 
-  Future<void> sendUserMessage(
-      String conversationId, String? messageContent) async {
+  Future<void> sendUserMessage(String conversationId, String? messageContent) async {
     if (messageContent != null) {
       var messageId = const Uuid().v1();
       final messageEntity = MessageEntity(
@@ -61,8 +63,7 @@ class ChatController extends GetxController {
     }
   }
 
-  Future<void> handleChatbotResponse(
-      String conversationId, String prompt) async {
+  Future<void> handleChatbotResponse(String conversationId, String prompt) async {
     final chatbotTypingMessage = MessageEntity(
       id: const Uuid().v1(),
       content: 'Chatbot đang phản hồi...',
@@ -72,8 +73,7 @@ class ChatController extends GetxController {
     );
     messages.insert(0, chatbotTypingMessage);
     update();
-    final message =
-        await _receiveChatbotResponseUseCase.call(conversationId, prompt);
+    final message = await _receiveChatbotResponseUseCase.call(conversationId, prompt);
     messages.remove(chatbotTypingMessage);
     messages.insert(0, message!);
     refresh();
