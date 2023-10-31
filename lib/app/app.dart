@@ -1,4 +1,3 @@
-import 'package:chatter_app/app/presentation/controllers/auth_controller.dart';
 import 'package:chatter_app/core/constants/page_route_constants.dart';
 import 'package:chatter_app/core/routes/app_route.dart';
 import 'package:chatter_app/core/themes/theme.dart';
@@ -7,12 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class MainApp extends StatelessWidget {
-  MainApp({super.key});
-  final AuthController _authController = Get.find<AuthController>();
+  const MainApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    _authController.checkLoginStatus();
-
     return ScreenUtilInit(
       designSize: const Size(393, 830),
       minTextAdapt: true,
@@ -25,9 +22,7 @@ class MainApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
-            initialRoute: _authController.isLoggedIn.value
-                ? PageRouteConstants.home
-                : PageRouteConstants.login,
+            initialRoute: PageRouteConstants.login,
             getPages: AppRoute.route,
           ),
         );

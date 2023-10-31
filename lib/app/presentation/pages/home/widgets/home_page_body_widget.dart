@@ -35,23 +35,25 @@ class HomePageBodyWidget extends StatelessWidget {
                 child: Text('Không có cuộc trò chuyện nào.'),
               );
             }
-            return ListView.builder(
-              padding: const EdgeInsets.all(10),
-              shrinkWrap: true,
-              itemCount: conversations.length,
-              itemBuilder: (context, index) {
-                final conversation = conversations[index];
-                return GestureDetector(
-                  onTap: () {
-                    _homeController.navigateToChat(conversation);
-                  },
-                  child: ConversationItemWidget(
-                      title: conversation.name ??
-                          'Cuộc trò chuyện chưa có tiêu đề',
-                      lastMessage: conversation.lastMessage ?? '',
-                      lastMessageTime: conversation.lastMessageTime ?? ''),
-                );
-              },
+            return Obx(
+              () => ListView.builder(
+                padding: const EdgeInsets.all(10),
+                shrinkWrap: true,
+                itemCount: conversations.length,
+                itemBuilder: (context, index) {
+                  final conversation = conversations[index];
+                  return GestureDetector(
+                    onTap: () {
+                      _homeController.navigateToChat(conversation);
+                    },
+                    child: ConversationItemWidget(
+                        title: conversation.name ??
+                            'Cuộc trò chuyện chưa có tiêu đề',
+                        lastMessage: conversation.lastMessage ?? '',
+                        lastMessageTime: conversation.lastMessageTime ?? ''),
+                  );
+                },
+              ),
             );
           });
         }

@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/di/app_injection.dart';
 import 'widgets/chat_area_widget.dart';
 
 class ChatPage extends StatelessWidget {
   ChatPage({super.key});
-  final ChatController _chatController = Get.find<ChatController>();
-  final HomeController _homeController = Get.find<HomeController>();
+  final ChatController _chatController = locator<ChatController>();
+  final HomeController _homeController = locator<HomeController>();
   @override
   Widget build(BuildContext context) {
     final messages = _chatController.messages;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.lightBlueAccent,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
           onPressed: () {
@@ -38,7 +40,7 @@ class ChatPage extends StatelessWidget {
                     onSubmitted: (text) =>
                         _chatController.messageController.text = text,
                     maxLines: null,
-                    textInputAction: TextInputAction.newline,
+                    textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
                       hintText: 'Nhập tin nhắn...',
                       border: OutlineInputBorder(

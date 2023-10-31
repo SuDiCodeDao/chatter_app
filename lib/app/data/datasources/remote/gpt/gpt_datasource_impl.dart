@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:chatter_app/app/data/models/message_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/Uuid.dart';
 
@@ -46,10 +45,6 @@ class GptDataSourceImpl extends GptDataSource {
           throw Exception(jsonResponse['error']['message']);
         }
 
-        if (kDebugMode) {
-          print(response);
-        }
-
         if (isImageRequest) {
           return processImageResponse(jsonResponse);
         } else {
@@ -61,7 +56,6 @@ class GptDataSourceImpl extends GptDataSource {
     } catch (e) {
       throw Exception('An error occurred: $e');
     }
-    return null;
   }
 
   bool isImageGenerationRequest(String prompt) {
@@ -129,7 +123,4 @@ class GptDataSourceImpl extends GptDataSource {
     }
     throw Exception('Invalid image response');
   }
-
-
-
 }

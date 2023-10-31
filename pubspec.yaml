@@ -46,9 +46,9 @@ dependencies:
   flutter_screenutil: ^5.9.0
   sms_autofill: ^2.3.0
   google_fonts: ^6.1.0
-  country_picker: ^2.0.21
+  country_picker: ^2.0.22
   flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.3.4
+  flutter_native_splash: ^2.3.5
   uuid: ^4.1.0
   audioplayers: ^5.2.0
   record: ^5.0.1
@@ -64,6 +64,7 @@ dependencies:
   mockito: ^5.4.2
   intl: ^0.18.1
   flutter_langdetect: ^0.0.2
+  get_it: ^7.6.4
 
 dev_dependencies:
   flutter_test:

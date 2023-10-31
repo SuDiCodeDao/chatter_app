@@ -23,13 +23,24 @@ class ChatController extends GetxController {
         _receiveChatbotResponseUseCase = receiveChatbotResponseUseCase,
         _loadMessagesUseCase = loadMessagesUseCase;
 
-  Future<bool> loadMessages(String conversationId) async {
+  Future<void> loadMessages(String conversationId) async {
     final loadedMessages = await _loadMessagesUseCase.call(conversationId);
+    // print('Loaded messages: $loadedMessages');
     if (loadedMessages != null) {
       messages.assignAll(loadedMessages);
-      return true;
-    } else {
-      return false;
+      //   messages.addAll(loadedMessages);
+      //   //messages.insertAll(0, loadedMessages);
+      //   //messages.addAllIf(loadedMessages != null, loadedMessages);
+      refresh();
+      update();
+    }
+    if (loadedMessages == null) {
+      messages.add(MessageEntity(
+          content: 'Xin chao toi la chatbot',
+          role: 'gpt',
+          timeStamp: DateTime.now().toLocal().toString()));
+
+      update();
     }
   }
 
@@ -45,7 +56,6 @@ class ChatController extends GetxController {
           reaction: MessageReaction.none);
       await _sendMessageUseCase.call(conversationId, messageEntity);
       messages.add(messageEntity);
-
       await handleChatbotResponse(conversationId, messageContent);
       update();
     }
@@ -53,8 +63,18 @@ class ChatController extends GetxController {
 
   Future<void> handleChatbotResponse(
       String conversationId, String prompt) async {
+    final chatbotTypingMessage = MessageEntity(
+      id: const Uuid().v1(),
+      content: 'Chatbot đang phản hồi...',
+      role: 'gpt',
+      timeStamp: DateTime.now().toLocal().toString(),
+      reaction: MessageReaction.none,
+    );
+    messages.insert(0, chatbotTypingMessage);
+    update();
     final message =
         await _receiveChatbotResponseUseCase.call(conversationId, prompt);
+    messages.remove(chatbotTypingMessage);
     messages.insert(0, message!);
     refresh();
     update();

@@ -10,4 +10,5 @@ class LoadMessagesUseCase {
   Future<List<MessageEntity>?> call(String conversationId) async {
     return await _messageRepository.getMessagesInConversation(conversationId);
   }
+  //khong cho null
 }

@@ -49,25 +49,21 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
   @override
   Future<List<MessageModel>?> getMessagesInConversation(
       String conversationId) async {
-    if (conversationId.isNotEmpty) {
-      final conversationRef =
-          firestore.collection('conversations').doc(conversationId);
+    final conversationRef =
+        firestore.collection('conversations').doc(conversationId);
 
-      final conversationData = (await conversationRef.get()).data();
-      if (conversationData != null) {
-        final List<Map<String, dynamic>> messages =
-            List.from(conversationData['messages']);
-        messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
+    final conversationData = (await conversationRef.get()).data();
+    if (conversationData != null) {
+      final List<Map<String, dynamic>> messages =
+          List.from(conversationData['messages']);
+      messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
 
-        final messageModels =
-            messages.map((message) => MessageModel.fromMap(message)).toList();
+      final messageModels =
+          messages.map((message) => MessageModel.fromMap(message)).toList();
 
-        return messageModels;
-      }
-    } else {
-      throw Exception('conversationId không được rỗng');
+      return messageModels;
     }
-    return null;
+    return [];
   }
 
   @override

@@ -11,8 +11,7 @@ class ChatAreaWidget extends StatelessWidget {
     required ChatController chatController,
     required HomeController homeController,
     required this.messages,
-  })
-      : _chatController = chatController,
+  })  : _chatController = chatController,
         _homeController = homeController;
 
   final ChatController _chatController;
@@ -24,7 +23,7 @@ class ChatAreaWidget extends StatelessWidget {
     return FutureBuilder(
       future: _chatController
           .loadMessages(_homeController.selectedConversationId.value),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(),
@@ -35,34 +34,38 @@ class ChatAreaWidget extends StatelessWidget {
             child: Text('Error: ${snapshot.error}'),
           );
         }
+        if (messages.isEmpty) {
+          return const Center(
+            child: Text('Không có tin nhắn nào.'),
+          );
+        }
         return Obx(
-              () =>
-              Expanded(
-                child: ListView.builder(
-                  reverse: true,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messages[index];
-                    final isUserMessage = message.role == 'user';
-                    return buildMessageBubble(message, isUserMessage, context);
-                  },
-                ),
-              ),
+          () => Expanded(
+            child: ListView.builder(
+              reverse: true,
+              physics: const ClampingScrollPhysics(),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final message = messages[index];
+                final isUserMessage = message.role == 'user';
+                return buildMessageBubble(message, isUserMessage, context);
+              },
+            ),
+          ),
         );
       },
     );
   }
 
-  Widget buildMessageBubble(MessageEntity message, bool isUserMessage,
-      BuildContext context) {
+  Widget buildMessageBubble(
+      MessageEntity message, bool isUserMessage, BuildContext context) {
     return Container(
       margin: isUserMessage
           ? const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 8)
           : const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 8),
       child: Row(
         mainAxisAlignment:
-        isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+            isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(12),
@@ -71,20 +74,17 @@ class ChatAreaWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             constraints: BoxConstraints(
-              maxWidth: MediaQuery
-                  .of(context)
-                  .size
-                  .width * 2 / 3,
+              maxWidth: MediaQuery.of(context).size.width * 2 / 3,
             ),
             child:
-            message.content != null && message.content!.startsWith('http')
-                ? Image.network(message.content!)
-                : Text(
-              message.content!,
-              style: TextStyle(
-                color: isUserMessage ? Colors.white : Colors.black,
-              ),
-            ),
+                message.content != null && message.content!.startsWith('http')
+                    ? Image.network(message.content!)
+                    : Text(
+                        message.content!,
+                        style: TextStyle(
+                          color: isUserMessage ? Colors.white : Colors.black,
+                        ),
+                      ),
           ),
         ],
       ),

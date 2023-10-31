@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
+import '../../../../core/di/app_injection.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/home_controller.dart';
 import 'widgets/home_page_body_widget.dart';
@@ -8,8 +8,8 @@ import 'widgets/home_page_body_widget.dart';
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  final _homeController = Get.find<HomeController>();
-  final _authController = Get.find<AuthController>();
+  final _homeController = locator<HomeController>();
+  final _authController = locator<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

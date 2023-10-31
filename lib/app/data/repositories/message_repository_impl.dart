@@ -12,14 +12,15 @@ class MessageRepositoryImpl extends MessageRepository {
       String conversationId) async {
     var listMessageModel = await firebaseMessageDataSource
         .getMessagesInConversation(conversationId);
+    print(listMessageModel);
     if (listMessageModel != null) {
       return listMessageModel
           .map((messageModel) => messageModel.toEntity())
           .toList();
-    } else {
-      return [];
     }
+    return [];
   }
+  //luc dau ham nay tra ve list,messageenitity và có thể là rỗng..
 
   @override
   Future<void> sendMessage(
