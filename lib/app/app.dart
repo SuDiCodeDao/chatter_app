@@ -6,11 +6,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key, required this.isLoggedIn});
-  final bool? isLoggedIn;
+  const MainApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final bool isUserLoggedIn = isLoggedIn ?? false;
     return ScreenUtilInit(
         designSize: const Size(393, 830),
         minTextAdapt: true,
@@ -23,9 +22,7 @@ class MainApp extends StatelessWidget {
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: ThemeMode.system,
-              initialRoute: isUserLoggedIn
-                  ? PageRouteConstants.home
-                  : PageRouteConstants.login,
+              initialRoute: PageRouteConstants.login,
               getPages: AppRoute.route,
             ),
           );
