@@ -102,9 +102,13 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
         },
         codeSent: (String? verificationId, resendToken) async {
           this.verificationId = verificationId;
-          PhoneAuthCredential credential = PhoneAuthProvider.credential(
-              verificationId: verificationId!, smsCode: smsCode!);
-          await auth.signInWithCredential(credential);
+          if (smsCode != null) {
+            PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                verificationId: verificationId!, smsCode: smsCode!);
+            await auth.signInWithCredential(credential);
+          } else {
+            // Xử lý trường hợp smsCode là null
+          }
         },
         codeAutoRetrievalTimeout: (verificationId) {});
   }

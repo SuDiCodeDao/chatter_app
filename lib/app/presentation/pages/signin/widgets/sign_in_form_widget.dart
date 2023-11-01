@@ -46,16 +46,17 @@ class SignInFormWidget extends StatelessWidget {
                   text: 'Đăng nhập với OTP'),
               SizedBox(height: 10.h),
               Text(
-                ' hoặc ',
+                ' ------- hoặc -------',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15.sp),
               ),
+              SizedBox(height: 10.h),
               ElevatedButton(
                 onPressed: () {
                   _authController.signInWithGoogle();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red, // Màu nền của nút
+                  backgroundColor: Colors.lightBlueAccent, // Màu nền của nút
                   shape: RoundedRectangleBorder(
                     borderRadius:
                         BorderRadius.circular(10), // Hình dáng của nút

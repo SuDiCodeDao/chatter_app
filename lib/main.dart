@@ -1,3 +1,4 @@
+import 'package:chatter_app/app/data/datasources/local/shared_preferences/shared_datasource_impl.dart';
 import 'package:chatter_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -11,5 +12,7 @@ void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupLocator();
-  runApp(const MainApp());
+  final sharedDataSource = locator<SharedDataSourceImpl>();
+  final isLoggedIn = await sharedDataSource.isLoggedIn();
+  runApp(MainApp(isLoggedIn: isLoggedIn));
 }

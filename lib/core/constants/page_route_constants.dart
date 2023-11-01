@@ -4,5 +4,5 @@ class PageRouteConstants {
   static const String otp = '/otp';
   static const String chat = '/chat';
 
-  static const String setting = '/setting';
+  static const String userProfile = '/user_profile';
 }

@@ -58,17 +58,15 @@ class ChatAreaWidget extends StatelessWidget {
           );
         }
         return Obx(
-          () => Expanded(
-            child: ListView.builder(
-              reverse: true,
-              physics: const ClampingScrollPhysics(),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                final isUserMessage = message.role == 'user';
-                return buildMessageBubble(message, isUserMessage, context);
-              },
-            ),
+          () => ListView.builder(
+            reverse: true,
+            physics: const ClampingScrollPhysics(),
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              final message = messages[index];
+              final isUserMessage = message.role == 'user';
+              return buildMessageBubble(message, isUserMessage, context);
+            },
           ),
         );
       },

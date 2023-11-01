@@ -66,7 +66,7 @@ class OTPPageBodyWidget extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               decoration: TextDecoration.underline,
                               fontSize: 16.sp,
-                              color: Colors.red),
+                              color: Colors.lightBlueAccent),
                         ),
                       ))
                     ],

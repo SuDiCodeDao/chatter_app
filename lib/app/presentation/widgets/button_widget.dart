@@ -13,7 +13,7 @@ class ButtonWidget extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red, // Màu nền của nút
+        backgroundColor: Colors.lightBlueAccent, // Màu nền của nút
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10), // Hình dáng của nút
         ),

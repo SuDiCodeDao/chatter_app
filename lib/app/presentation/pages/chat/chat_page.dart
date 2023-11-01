@@ -16,6 +16,7 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final messages = _chatController.messages;
+
     return Scaffold(
       appBar: AppBar(
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.edit))],
@@ -33,10 +34,12 @@ class ChatPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          ChatAreaWidget(
-              chatController: _chatController,
-              homeController: _homeController,
-              messages: messages),
+          Expanded(
+            child: ChatAreaWidget(
+                chatController: _chatController,
+                homeController: _homeController,
+                messages: messages),
+          ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 5.h),
             child: Row(
@@ -62,19 +65,17 @@ class ChatPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                Obx(
-                  () => IconButton(
-                    icon: _chatController.isListening.value
-                        ? const Icon(Icons.stop, color: Colors.lightBlueAccent)
-                        : const Icon(Icons.keyboard_voice,
-                            color: Colors.lightBlueAccent),
-                    onPressed: () {
-                      _chatController.isListening.value
-                          ? _chatController.stopListening()
-                          : _chatController.startListening(
-                              _homeController.selectedConversationId.value);
-                    },
-                  ),
+                IconButton(
+                  icon: _chatController.isListening
+                      ? const Icon(Icons.stop, color: Colors.lightBlueAccent)
+                      : const Icon(Icons.keyboard_voice,
+                          color: Colors.lightBlueAccent),
+                  onPressed: () {
+                    _chatController.isListening
+                        ? _chatController.stopListening()
+                        : _chatController.startListening(
+                            _homeController.selectedConversationId.value);
+                  },
                 ),
                 IconButton(
                   onPressed: () {

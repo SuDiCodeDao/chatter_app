@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../../../core/di/app_injection.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/home_controller.dart';
+import 'widgets/home_app_bar_widget.dart';
 import 'widgets/home_page_body_widget.dart';
 
 class HomePage extends StatelessWidget {
@@ -17,21 +17,35 @@ class HomePage extends StatelessWidget {
       drawer: Drawer(
         child: ListView(
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.lightBlueAccent),
-              child: Text(''),
+            DrawerHeader(
+              decoration: const BoxDecoration(color: Colors.lightBlueAccent),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ClipOval(
+                      child: Image.network(
+                          _authController.userEntity.value.photoUrl!),
+                    ),
+                    Text(
+                      _authController.userEntity.value.displayName!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
             const ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Thông tin người dùng'),
+              leading: Icon(Icons.live_help),
+              title: Text('Điều khoản và quyền riêng tư'),
             ),
-            const ListTile(
-              leading: Icon(Icons.help),
-              title: Text('Hướng dẫn sử dụng'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.info),
-              title: Text('Về ứng dụng'),
+            ListTile(
+              onTap: () => showAppInfoDialog(context),
+              leading: const Icon(Icons.info),
+              title: const Text('Về ứng dụng'),
             ),
             ListTile(
               onTap: () {
@@ -39,41 +53,16 @@ class HomePage extends StatelessWidget {
               },
               leading: const Icon(Icons.logout),
               title: const Text('Đăng xuất'),
-            )
+            ),
+            const ListTile(
+              leading: Icon(Icons.no_accounts),
+              title: Text('Xóa tài khoản'),
+            ),
           ],
         ),
       ),
-      appBar: AppBar(
-          centerTitle: true,
-          title: const Text('Chatter Bot'),
-          backgroundColor: Colors.lightBlueAccent,
-          leading: Builder(builder: (context) {
-            return IconButton(
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              icon: ClipOval(
-                child: Image.network(
-                  _authController.userEntity.value.photoUrl!,
-                  fit: BoxFit.cover,
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-            );
-          }),
-          actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-            Obx(
-              () => IconButton(
-                  onPressed: () {
-                    _homeController.toggleDarkMode();
-                  },
-                  icon: _homeController.isDarkMode.value
-                      ? const Icon(Icons.dark_mode)
-                      : const Icon(Icons.light_mode)),
-            ),
-          ]),
+      appBar: HomeAppBarWidget(
+          authController: _authController, homeController: _homeController),
       body: HomePageBodyWidget(
           homeController: _homeController,
           userId: _authController.userEntity.value.uid!),
@@ -88,5 +77,19 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           )),
     );
+  }
+
+  void showAppInfoDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AboutDialog(
+            applicationName: 'Chatter Bot',
+            applicationIcon: Icon(Icons.add),
+            applicationVersion: '1.0.0',
+            applicationLegalese:
+                'Chatter Bot là ứng dụng trò chuyện thông minh được phát triển bởi tôi',
+          );
+        });
   }
 }

@@ -16,10 +16,11 @@ class ChatController extends GetxController {
   final ReceiveChatbotResponseUseCase _receiveChatbotResponseUseCase;
   final LoadMessagesUseCase _loadMessagesUseCase;
   RxList<MessageEntity> messages = <MessageEntity>[].obs;
-  var isListening = false.obs;
   final TextEditingController messageController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
-  final RxString lastWords = ''.obs;
+  final RxString _lastWords = ''.obs;
+  final _speechEnable = false.obs;
+
   ChatController(
       {required SendMessageUseCase sendMessageUseCase,
       required ReceiveChatbotResponseUseCase receiveChatbotResponseUseCase,
@@ -92,7 +93,6 @@ class ChatController extends GetxController {
 
   void stopListening() async {
     await _speechToText.stop();
-    isListening.value = false;
   }
 
   Future<void> startListening(String conversationId) async {
@@ -100,11 +100,17 @@ class ChatController extends GetxController {
   }
 
   Future<void> _initSpeech() async {
-    isListening.value = await _speechToText.initialize();
+    _speechEnable.value = await _speechToText.initialize();
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
-    lastWords.value = result.recognizedWords;
-    print(lastWords);
+    if (_speechEnable.value) {
+      _lastWords.value = result.recognizedWords;
+      print(lastWords);
+    }
   }
+
+  bool get isListening => _speechToText.isListening;
+  bool get isSpeechEnabled => _speechEnable.value;
+  String get lastWords => _lastWords.value;
 }
