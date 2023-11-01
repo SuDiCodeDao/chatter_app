@@ -3,4 +3,6 @@ class PageRouteConstants {
   static const String home = '/home';
   static const String otp = '/otp';
   static const String chat = '/chat';
+
+  static const String setting = '/setting';
 }

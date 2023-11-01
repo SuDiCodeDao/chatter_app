@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 void main() {
   testWidgets('Test MainApp Widget', (WidgetTester tester) async {
     // Build our widget.
-    await tester.pumpWidget(MainApp());
+    await tester.pumpWidget(const MainApp());
 
     // Verify if the MaterialApp widget is found.
     expect(find.byType(MaterialApp), findsOneWidget);

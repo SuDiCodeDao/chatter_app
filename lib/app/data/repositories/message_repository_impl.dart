@@ -18,7 +18,12 @@ class MessageRepositoryImpl extends MessageRepository {
           .map((messageModel) => messageModel.toEntity())
           .toList();
     }
-    return [];
+    return [
+      MessageEntity(
+          content: 'Xin chao toi la bot',
+          role: 'gpt',
+          timeStamp: DateTime.now().toLocal().toString())
+    ];
   }
   //luc dau ham nay tra ve list,messageenitity và có thể là rỗng..
 

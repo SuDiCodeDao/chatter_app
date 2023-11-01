@@ -77,10 +77,11 @@ class GptDataSourceImpl extends GptDataSource {
     } else {
       return {
         'prompt': prompt,
-        'model': 'gpt-3.5-turbo-instruct',
+        'model': 'text-davinci-003',
         'max_tokens': 1000,
-        'temperature': 0.2,
-        'top_p': 0.7,
+        'n': 1,
+        'temperature': 0,
+        'top_p': 1,
       };
     }
   }
@@ -92,7 +93,7 @@ class GptDataSourceImpl extends GptDataSource {
       id: const Uuid().v4(),
       role: 'gpt',
       reaction: MessageReaction.none,
-      content: text,
+      content: text.trim(),
       timeStamp: DateTime.now().toLocal().toString(),
     );
   }

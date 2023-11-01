@@ -20,6 +20,24 @@ class ChatAreaWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return Obx(
+    //   () => Expanded(
+    //     child: _chatController.messages.isEmpty
+    //         ? const Center(
+    //             child: Text('message is empty'),
+    //           )
+    //         : ListView.builder(
+    //             reverse: true,
+    //             physics: const ClampingScrollPhysics(),
+    //             itemCount: _chatController.messages.length,
+    //             itemBuilder: (context, index) {
+    //               final message = _chatController.messages[index];
+    //               final isUserMessage = message.role == 'user';
+    //               return buildMessageBubble(message, isUserMessage, context);
+    //             },
+    //           ),
+    //   ),
+    // );
     return FutureBuilder(
       future: _chatController
           .loadMessages(_homeController.selectedConversationId.value),

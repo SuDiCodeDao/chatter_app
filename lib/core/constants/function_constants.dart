@@ -1,7 +1,5 @@
-import 'package:intl/intl.dart';
-
 String formatLastMessageTime(String lastMessageTime) {
-  if (lastMessageTime == null || lastMessageTime.isEmpty) {
+  if (lastMessageTime.isEmpty) {
     return '';
   }
   final parts = lastMessageTime.split(" ");
@@ -24,8 +22,8 @@ String formatLastMessageTime(String lastMessageTime) {
   final second = timeParts[2].split(".")[0];
 
   final now = DateTime.now();
-  if (year == now.year.toString() &&
-      month == now.month.toString() &&
+  if (year == now.year.toString() ||
+      month == now.month.toString() ||
       day == now.day.toString()) {
     return '$hour:$minute';
   } else if (year != now.year.toString()) {
