@@ -37,4 +37,9 @@ class ConversationRepositoryImpl extends ConversationRepository {
     var conversationModel = ConversationModel.fromEntity(conversationEntity);
     await firebaseConversationDataSource.addConversation(conversationModel);
   }
+
+  @override
+  Future<void> deleteConversation(String conversationId) async {
+    await firebaseConversationDataSource.deleteConversation(conversationId);
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/auth_controller.dart';
@@ -30,8 +31,8 @@ class HomeAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               child: Image.network(
                 _authController.userEntity.value.photoUrl!,
                 fit: BoxFit.cover,
-                width: 40,
-                height: 40,
+                width: 40.w,
+                height: 40.h,
               ),
             ),
           );

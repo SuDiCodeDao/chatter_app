@@ -1,11 +1,10 @@
-import 'package:chatter_app/app/data/datasources/local/shared_preferences/shared_datasource.dart';
-import 'package:chatter_app/app/data/datasources/local/shared_preferences/shared_datasource_impl.dart';
 import 'package:chatter_app/app/domain/usecases/auth/sign_out_usecase.dart';
+import 'package:chatter_app/app/domain/usecases/chat/clear_all_message_usecase.dart';
+import 'package:chatter_app/app/domain/usecases/chat/delete_conversation_usecase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app/data/datasources/remote/firebase/auth/firebase_auth_datasource.dart';
 import '../../app/data/datasources/remote/firebase/auth/firebase_auth_datasource_impl.dart';
@@ -46,10 +45,7 @@ final GetIt locator = GetIt.instance;
 
 Future<void> setupLocator() async {
   // Data sources
-  final SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
-  locator.registerLazySingleton<SharedDatasource>(
-      () => SharedDataSourceImpl(sharedPreferences: sharedPreferences));
+
   locator.registerLazySingleton<FirebaseAuthDataSource>(
       () => FirebaseAuthDataSourceImpl(
             auth: FirebaseAuth.instance,
@@ -101,6 +97,12 @@ Future<void> setupLocator() async {
       ));
 
   // Usecases
+
+  locator.registerLazySingleton<ClearAllMessageUseCase>(() =>
+      ClearAllMessageUseCase(messageRepository: locator<MessageRepository>()));
+  locator.registerLazySingleton<DeleteConversationUseCase>(() =>
+      DeleteConversationUseCase(
+          conversationRepository: locator<ConversationRepository>()));
   locator.registerLazySingleton<ReceiveChatbotResponseUseCase>(
       () => ReceiveChatbotResponseUseCase(
             gptRepository: locator<GptRepository>(),
@@ -165,10 +167,12 @@ Future<void> setupLocator() async {
       loadConversationUseCase: locator<LoadConversationsUseCase>(),
       getCurrentUserUseCase: locator<GetCurrentUserUseCase>(),
       updateUserUseCase: locator<UpdateUserUseCase>(),
+      deleteConversationUseCase: locator<DeleteConversationUseCase>(),
       createNewConversationUseCase: locator<CreateNewConversationUseCase>(),
       signOutUseCase: locator<SignOutUseCase>()));
 
   locator.registerSingleton(ChatController(
+    clearAllMessageUseCase: locator<ClearAllMessageUseCase>(),
     sendMessageUseCase: locator<SendMessageUseCase>(),
     receiveChatbotResponseUseCase: locator<ReceiveChatbotResponseUseCase>(),
     loadMessagesUseCase: locator<LoadMessagesUseCase>(),

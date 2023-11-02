@@ -9,10 +9,12 @@ import 'package:uuid/uuid.dart';
 import '../../domain/entities/conversation_entity.dart';
 import '../../domain/usecases/auth/get_current_user_usecase.dart';
 import '../../domain/usecases/auth/update_user_profile_usecase.dart';
+import '../../domain/usecases/chat/delete_conversation_usecase.dart';
 import '../../domain/usecases/chat/load_conversations_usecase.dart';
 
 class HomeController extends GetxController {
   final isDarkMode = false.obs;
+  final RxBool isDeletingConversation = false.obs;
   RxList<ConversationEntity> conversations = <ConversationEntity>[].obs;
   CreateNewConversationUseCase? _createNewConversationUseCase;
   SignOutUseCase? _signOutUseCase;
@@ -21,10 +23,12 @@ class HomeController extends GetxController {
   GetCurrentUserUseCase? _getCurrentUserUseCase;
 
   UpdateUserUseCase? _updateUserUseCase;
+  DeleteConversationUseCase? _deleteConversationUseCase;
   final RxString selectedConversationId = "".obs;
   HomeController(
       {loadConversationUseCase,
       signOutUseCase,
+      deleteConversationUseCase,
       createNewConversationUseCase,
       getCurrentUserUseCase,
       updateUserUseCase}) {
@@ -33,6 +37,7 @@ class HomeController extends GetxController {
     _getCurrentUserUseCase = getCurrentUserUseCase;
     _updateUserUseCase = updateUserUseCase;
     _signOutUseCase = signOutUseCase;
+    _deleteConversationUseCase = deleteConversationUseCase;
   }
 
   Future<void> signOut() async {
@@ -76,14 +81,28 @@ class HomeController extends GetxController {
       final user = await _getCurrentUserUseCase!(userId);
       if (!user.conversationIds!.contains(conversationId)) {
         user.conversationIds?.add(conversationId);
-        await _updateUserUseCase!(user);
+
         final newConversation = ConversationEntity(
             id: conversationId,
             name: 'Cuộc trò chuyện chưa có tiêu đề',
             userId: userId,
             createAt: DateTime.now().toLocal().toString());
+        conversations.add(newConversation);
+        await _updateUserUseCase!(user);
         await _createNewConversationUseCase?.call(newConversation);
+        update();
       }
+    }
+  }
+
+  Future<void> deleteConversation(String userId, String conversationId) async {
+    final user = await _getCurrentUserUseCase!(userId);
+    if (user.conversationIds!.contains(conversationId)) {
+      user.conversationIds?.remove(conversationId);
+      await _deleteConversationUseCase!.call(conversationId);
+      await _updateUserUseCase!(user);
+      conversations
+          .removeWhere((conversation) => conversation.id == conversationId);
     }
   }
 

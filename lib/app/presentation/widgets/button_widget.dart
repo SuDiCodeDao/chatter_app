@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ButtonWidget extends StatelessWidget {
   final VoidCallback onPressed;
@@ -13,13 +14,13 @@ class ButtonWidget extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.lightBlueAccent, // Màu nền của nút
+        backgroundColor: Colors.lightBlueAccent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // Hình dáng của nút
+          borderRadius: BorderRadius.circular(10),
         ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 10,
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.w,
+          vertical: 10.h,
         ),
       ),
       child: Row(

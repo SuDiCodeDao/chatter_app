@@ -1,11 +1,11 @@
 import 'package:chatter_app/app/presentation/controllers/chat_controller.dart';
 import 'package:chatter_app/app/presentation/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/di/app_injection.dart';
 import 'widgets/chat_area_widget.dart';
+import 'widgets/chat_input_area_widget.dart';
 
 class ChatPage extends StatelessWidget {
   ChatPage({super.key});
@@ -40,62 +40,8 @@ class ChatPage extends StatelessWidget {
                 homeController: _homeController,
                 messages: messages),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5.h),
-            child: Row(
-              children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.clear_all,
-                      color: Colors.lightBlueAccent,
-                    )),
-                Expanded(
-                  child: TextField(
-                    controller: _chatController.messageController,
-                    onSubmitted: (text) =>
-                        _chatController.messageController.text = text,
-                    maxLines: null,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      hintText: 'Nhập tin nhắn...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: _chatController.isListening
-                      ? const Icon(Icons.stop, color: Colors.lightBlueAccent)
-                      : const Icon(Icons.keyboard_voice,
-                          color: Colors.lightBlueAccent),
-                  onPressed: () {
-                    _chatController.isListening
-                        ? _chatController.stopListening()
-                        : _chatController.startListening(
-                            _homeController.selectedConversationId.value);
-                  },
-                ),
-                IconButton(
-                  onPressed: () {
-                    final messageContent =
-                        _chatController.messageController.text.trim();
-                    if (messageContent.isNotEmpty) {
-                      _chatController.sendUserMessage(
-                          _homeController.selectedConversationId.value,
-                          messageContent);
-                      _chatController.messageController.text = '';
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.send,
-                    color: Colors.lightBlueAccent,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ChatInputAreaWidget(
+              chatController: _chatController, homeController: _homeController),
         ],
       ),
     );

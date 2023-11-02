@@ -12,16 +12,20 @@ class FirebaseConversationDataSourceImpl
   @override
   Future<void> addConversation(ConversationModel conversationModel) async {
     final docRef = firestore.collection('conversations');
-
     await docRef.doc(conversationModel.id).set(conversationModel.toMap());
   }
 
   @override
   Future<ConversationModel?> deleteConversation(String conversationId) async {
     final docRef = firestore.collection('conversations').doc(conversationId);
-    final deletedMessage = await docRef.get();
-    await docRef.delete();
-    return ConversationModel.fromMap(deletedMessage.data()!);
+    final conversationData = await docRef.get();
+
+    if (conversationData.exists) {
+      await docRef.delete();
+      return ConversationModel.fromMap(conversationData.data()!);
+    } else {
+      return null;
+    }
   }
 
   @override

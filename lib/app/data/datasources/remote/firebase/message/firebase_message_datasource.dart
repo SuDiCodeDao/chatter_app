@@ -15,6 +15,8 @@ abstract class FirebaseMessageDataSource {
   Future<List<MessageModel>> searchMessages(
       String conversationId, String query);
 
+  Future<void> deleteAllMessagesInConversation(String conversationId);
+
   Future<MessageModel> reactToMessage(
       String conversationId, String messageId, String reactionType);
 }

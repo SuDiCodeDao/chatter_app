@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../../domain/entities/message_entity.dart';
@@ -20,24 +21,6 @@ class ChatAreaWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Obx(
-    //   () => Expanded(
-    //     child: _chatController.messages.isEmpty
-    //         ? const Center(
-    //             child: Text('message is empty'),
-    //           )
-    //         : ListView.builder(
-    //             reverse: true,
-    //             physics: const ClampingScrollPhysics(),
-    //             itemCount: _chatController.messages.length,
-    //             itemBuilder: (context, index) {
-    //               final message = _chatController.messages[index];
-    //               final isUserMessage = message.role == 'user';
-    //               return buildMessageBubble(message, isUserMessage, context);
-    //             },
-    //           ),
-    //   ),
-    // );
     return FutureBuilder(
       future: _chatController
           .loadMessages(_homeController.selectedConversationId.value),
@@ -47,11 +30,7 @@ class ChatAreaWidget extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        }
+
         if (messages.isEmpty) {
           return const Center(
             child: Text('Không có tin nhắn nào.'),
@@ -77,20 +56,28 @@ class ChatAreaWidget extends StatelessWidget {
       MessageEntity message, bool isUserMessage, BuildContext context) {
     return Container(
       margin: isUserMessage
-          ? const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 8)
-          : const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 8),
+          ? EdgeInsets.only(left: 16.w, top: 8.h, right: 16.w, bottom: 8.h)
+          : EdgeInsets.only(left: 16.w, top: 8.h, right: 16.w, bottom: 8.h),
       child: Row(
         mainAxisAlignment:
             isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
               color: isUserMessage ? Colors.lightBlueAccent : Colors.grey,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.w),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1.w,
+                  blurRadius: 3.w,
+                  offset: Offset(0.w, 2.h),
+                )
+              ],
             ),
             constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 2 / 3,
+              maxWidth: 262.w,
             ),
             child:
                 message.content != null && message.content!.startsWith('http')
@@ -99,6 +86,7 @@ class ChatAreaWidget extends StatelessWidget {
                         message.content!,
                         style: TextStyle(
                           color: isUserMessage ? Colors.white : Colors.black,
+                          fontSize: 16.sp,
                         ),
                       ),
           ),

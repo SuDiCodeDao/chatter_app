@@ -1,3 +1,4 @@
+import 'package:chatter_app/app/domain/usecases/chat/clear_all_message_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/chat/load_messages_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/chat/receive_chatbot_response_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/chat/send_message_usecase.dart';
@@ -13,8 +14,11 @@ import '../../domain/entities/message_entity.dart';
 class ChatController extends GetxController {
   final SendMessageUseCase _sendMessageUseCase;
 
+  final isListening = false.obs;
+
   final ReceiveChatbotResponseUseCase _receiveChatbotResponseUseCase;
   final LoadMessagesUseCase _loadMessagesUseCase;
+  final ClearAllMessageUseCase _clearAllMessageUseCase;
   RxList<MessageEntity> messages = <MessageEntity>[].obs;
   final TextEditingController messageController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
@@ -24,9 +28,11 @@ class ChatController extends GetxController {
   ChatController(
       {required SendMessageUseCase sendMessageUseCase,
       required ReceiveChatbotResponseUseCase receiveChatbotResponseUseCase,
-      required LoadMessagesUseCase loadMessagesUseCase})
+      required LoadMessagesUseCase loadMessagesUseCase,
+      required ClearAllMessageUseCase clearAllMessageUseCase})
       : _sendMessageUseCase = sendMessageUseCase,
         _receiveChatbotResponseUseCase = receiveChatbotResponseUseCase,
+        _clearAllMessageUseCase = clearAllMessageUseCase,
         _loadMessagesUseCase = loadMessagesUseCase;
 
   @override
@@ -72,6 +78,14 @@ class ChatController extends GetxController {
     }
   }
 
+  Future<void> clearAllMessagesInConversation(String conversationId) async {
+    try {
+      await _clearAllMessageUseCase(conversationId);
+      messages.clear();
+      update();
+    } catch (e) {}
+  }
+
   Future<void> handleChatbotResponse(
       String conversationId, String prompt) async {
     final chatbotTypingMessage = MessageEntity(
@@ -93,10 +107,29 @@ class ChatController extends GetxController {
 
   void stopListening() async {
     await _speechToText.stop();
+    isListening.value = false;
   }
 
   Future<void> startListening(String conversationId) async {
-    await _speechToText.listen(onResult: _onSpeechResult);
+    if (_speechEnable.value) {
+      await _speechToText.listen(
+        onResult: _onSpeechResult,
+        cancelOnError: (error) {
+          print('Lỗi khi lắng nghe giọng nói: $error'); // In ra thông báo lỗi
+        },
+      );
+      isListening.value = true;
+    } else {
+      await _initSpeech();
+      if (_speechEnable.value) {
+        await _speechToText.listen(
+          onResult: _onSpeechResult,
+        );
+        isListening.value = true;
+      } else {
+        isListening.value = false;
+      }
+    }
   }
 
   Future<void> _initSpeech() async {
@@ -105,12 +138,16 @@ class ChatController extends GetxController {
 
   void _onSpeechResult(SpeechRecognitionResult result) {
     if (_speechEnable.value) {
-      _lastWords.value = result.recognizedWords;
-      print(lastWords);
+      try {
+        _lastWords.value = result.recognizedWords;
+        print(lastWords);
+      } catch (e) {
+        print('Lỗi: $e');
+      }
     }
   }
 
-  bool get isListening => _speechToText.isListening;
   bool get isSpeechEnabled => _speechEnable.value;
+
   String get lastWords => _lastWords.value;
 }

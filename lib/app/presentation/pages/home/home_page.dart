@@ -68,8 +68,8 @@ class HomePage extends StatelessWidget {
           userId: _authController.userEntity.value.uid!),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.lightBlueAccent,
-          onPressed: () {
-            _homeController
+          onPressed: () async {
+            await _homeController
                 .createAndNavigateToChat(_authController.userEntity.value.uid!);
           },
           child: const Icon(

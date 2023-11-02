@@ -138,4 +138,18 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
       });
     }
   }
+
+  @override
+  Future<void> deleteAllMessagesInConversation(String conversationId) async {
+    try {
+      final messages = await getMessagesInConversation(conversationId);
+      if (messages != null) {
+        for (final message in messages) {
+          await deleteMessage(conversationId, message.id!);
+        }
+      }
+    } catch (e) {
+      throw Exception('Failed to delete all messages: $e');
+    }
+  }
 }

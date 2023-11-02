@@ -33,4 +33,10 @@ class MessageRepositoryImpl extends MessageRepository {
     await firebaseMessageDataSource.sendMessage(
         conversationId, MessageModel.fromEntity(messageEntity));
   }
+
+  @override
+  Future<void> deleteAllMessagesInConversation(String conversationId) async {
+    await firebaseMessageDataSource
+        .deleteAllMessagesInConversation(conversationId);
+  }
 }
