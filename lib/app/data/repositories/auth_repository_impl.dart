@@ -8,9 +8,7 @@ class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuthDataSource firebaseAuthDataSource;
   final FirebaseUserDataSource firebaseUserDataSource;
 
-  AuthRepositoryImpl(
-      {required this.firebaseUserDataSource,
-      required this.firebaseAuthDataSource});
+  AuthRepositoryImpl({required this.firebaseUserDataSource, required this.firebaseAuthDataSource});
 
   bool shouldUseFirestore = true;
 
@@ -23,9 +21,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserEntity> signInWithGoogle() async {
     var userModel = await firebaseAuthDataSource.signInWithGoogle();
-
-    UserModel? existingUser =
-        await firebaseUserDataSource.getUserByEmail(userModel.email!);
+    UserModel? existingUser = await firebaseUserDataSource.getUserByEmail(userModel.email!);
     if (existingUser != null) {
       existingUser.displayName = userModel.displayName;
       existingUser.photoUrl = userModel.photoUrl;
@@ -33,7 +29,9 @@ class AuthRepositoryImpl implements AuthRepository {
       return existingUser.toEntity();
     } else {
       if (shouldUseFirestore) {
-        await firebaseUserDataSource.addUser(userModel);
+        if (userModel.uid != '' && userModel.uid != null) {
+          await firebaseUserDataSource.addUser(userModel);
+        }
       }
       return userModel.toEntity();
     }
@@ -53,13 +51,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserEntity> verifyOTP(String verificationCode) async {
-    UserModel userModel =
-        await firebaseAuthDataSource.verifyOTP(verificationCode);
+    UserModel userModel = await firebaseAuthDataSource.verifyOTP(verificationCode);
 
-    UserModel? existingUserByEmail =
-        await firebaseUserDataSource.getUserByEmail(userModel.email!);
-    UserModel? existingUserByPhone =
-        await firebaseUserDataSource.getUserByPhone(userModel.phone!);
+    UserModel? existingUserByEmail = await firebaseUserDataSource.getUserByEmail(userModel.email!);
+    UserModel? existingUserByPhone = await firebaseUserDataSource.getUserByPhone(userModel.phone!);
 
     UserModel? existingUser = existingUserByEmail ?? existingUserByPhone;
 

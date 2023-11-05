@@ -43,23 +43,31 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
 
   @override
   Future<UserModel> signInWithGoogle() async {
+    final emptyUserModel = UserModel(uid: '', email: '', displayName: '', phone: '', photoUrl: '');
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    final user = userCredential.user;
-    return UserModel(
-      uid: user!.uid,
-      email: user.email,
-      displayName: user.displayName,
-      phone: user.phoneNumber,
-      photoUrl: user.photoURL,
-    );
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    if (googleAuth?.accessToken != null && googleAuth?.idToken != null) {
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final user = userCredential.user;
+      if (user != null) {
+        return UserModel(
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          phone: user.phoneNumber,
+          photoUrl: user.photoURL,
+        );
+      } else {
+        return emptyUserModel;
+      }
+    } else {
+      return emptyUserModel;
+    }
   }
 
   @override
@@ -73,8 +81,8 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
 
   @override
   Future<UserModel> verifyOTP(String verificationCode) async {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId!, smsCode: verificationCode);
+    PhoneAuthCredential credential =
+        PhoneAuthProvider.credential(verificationId: verificationId!, smsCode: verificationCode);
     final userCredential = await auth.signInWithCredential(credential);
     final user = userCredential.user;
     return UserModel(
@@ -103,8 +111,8 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
         codeSent: (String? verificationId, resendToken) async {
           this.verificationId = verificationId;
           if (smsCode != null) {
-            PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                verificationId: verificationId!, smsCode: smsCode!);
+            PhoneAuthCredential credential =
+                PhoneAuthProvider.credential(verificationId: verificationId!, smsCode: smsCode!);
             await auth.signInWithCredential(credential);
           } else {
             // Xử lý trường hợp smsCode là null

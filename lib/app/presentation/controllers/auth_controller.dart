@@ -17,14 +17,16 @@ class AuthController extends GetxController {
   SendOtpUseCase? _sendOtpUseCase;
   VerifyOTPUseCase? _verifyOTPUseCase;
   CheckLoginUseCase? _checkLoginUseCase;
-  Rx<UserEntity> userEntity = UserEntity().obs;
+  Rx<UserEntity> userEntity = UserEntity(
+    uid: 'cIKzo1Op9UTdX6IJnYMEfjiC3mt2',
+    email: 'sunguyen.dev@gmail.com',
+    phone: '',
+    photoUrl: 'https://lh3.googleusercontent.com/a/ACg8ocI2XE5ya--r7HUzz7WNEnPLP_klLCSOPt86hRUTa_zj=s96-c',
+  ).obs;
   final otpInputController = TextEditingController();
   final phoneInputController = TextEditingController();
-  AuthController(
-      {signInWithGoogleUseCase,
-      sendOtpUseCase,
-      verifyOTPUseCase,
-      checkLoginUseCase}) {
+
+  AuthController({signInWithGoogleUseCase, sendOtpUseCase, verifyOTPUseCase, checkLoginUseCase}) {
     _signInWithGoogleUseCase = signInWithGoogleUseCase;
     _sendOtpUseCase = sendOtpUseCase;
     _verifyOTPUseCase = verifyOTPUseCase;
@@ -66,6 +68,8 @@ class AuthController extends GetxController {
 
   Future<void> signInWithGoogle() async {
     userEntity.value = await _signInWithGoogleUseCase!.call();
-    Get.toNamed(PageRouteConstants.home);
+    if (userEntity.value.uid != null && userEntity.value.uid != '') {
+      Get.toNamed(PageRouteConstants.home);
+    }
   }
 }

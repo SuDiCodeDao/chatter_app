@@ -91,6 +91,7 @@ class HomeController extends GetxController {
         await _updateUserUseCase!(user);
         await _createNewConversationUseCase?.call(newConversation);
         update();
+        refresh();
       }
     }
   }
@@ -106,10 +107,13 @@ class HomeController extends GetxController {
     }
   }
 
-  void navigateToChat(ConversationEntity conversation) {
+  Future<void> navigateToChat(ConversationEntity conversation, String userId) async {
     if (conversation.id != null && conversation.id!.isNotEmpty) {
       selectedConversationId(conversation.id);
-      Get.toNamed('${PageRouteConstants.chat}/${conversation.id}');
+      final rs = await Get.toNamed('${PageRouteConstants.chat}/${conversation.id}');
+      if (rs != null && rs == true) {
+        loadConversations(userId);
+      }
     }
   }
 }

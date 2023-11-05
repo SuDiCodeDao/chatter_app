@@ -54,14 +54,20 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
 
     final conversationData = (await conversationRef.get()).data();
     if (conversationData != null) {
-      final List<Map<String, dynamic>> messages =
-          List.from(conversationData['messages']);
-      messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
 
-      final messageModels =
-          messages.map((message) => MessageModel.fromMap(message)).toList();
+      if (conversationData['messages'] != null) {
+        final List<Map<String, dynamic>> messages =
+        List.from(conversationData['messages']);
+        messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
 
-      return messageModels;
+        final messageModels =
+        messages.map((message) => MessageModel.fromMap(message)).toList();
+
+        return messageModels;
+      }
+      else {
+        return [];
+      }
     }
     return [];
   }

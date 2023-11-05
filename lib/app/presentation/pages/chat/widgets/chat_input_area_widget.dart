@@ -24,8 +24,7 @@ class ChatInputAreaWidget extends StatelessWidget {
         children: [
           IconButton(
               onPressed: () {
-                _chatController.clearAllMessagesInConversation(
-                    _homeController.selectedConversationId.value);
+                _chatController.clearAllMessagesInConversation(_homeController.selectedConversationId.value);
               },
               icon: const Icon(
                 Icons.clear_all,
@@ -34,8 +33,7 @@ class ChatInputAreaWidget extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: _chatController.messageController,
-              onSubmitted: (text) =>
-                  _chatController.messageController.text = text,
+              onSubmitted: (text) => _chatController.messageController.text = text,
               maxLines: null,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
@@ -55,19 +53,18 @@ class ChatInputAreaWidget extends StatelessWidget {
               onPressed: () {
                 _chatController.isListening.value
                     ? _chatController.stopListening()
-                    : _chatController.startListening(
-                        _homeController.selectedConversationId.value);
+                    : _chatController.startListening(_homeController.selectedConversationId.value);
               },
             ),
           ),
           IconButton(
             onPressed: () {
-              final messageContent =
-                  _chatController.messageController.text.trim();
+              final messageContent = _chatController.messageController.text.trim();
               if (messageContent.isNotEmpty) {
                 _chatController.sendUserMessage(
-                    _homeController.selectedConversationId.value,
-                    messageContent);
+                  _homeController.selectedConversationId.value,
+                  messageContent,
+                );
                 _chatController.messageController.text = '';
               }
             },
