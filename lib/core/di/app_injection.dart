@@ -1,3 +1,4 @@
+import 'package:chatter_app/app/domain/usecases/auth/get_user_by_conversation_id_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/chat/clear_all_message_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/chat/delete_conversation_usecase.dart';
@@ -5,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../app/data/datasources/remote/firebase/auth/firebase_auth_datasource.dart';
 import '../../app/data/datasources/remote/firebase/auth/firebase_auth_datasource_impl.dart';
@@ -48,6 +50,7 @@ Future<void> setupLocator() async {
 
   locator.registerLazySingleton<FirebaseAuthDataSource>(
       () => FirebaseAuthDataSourceImpl(
+            googleSignIn: GoogleSignIn(),
             auth: FirebaseAuth.instance,
           ));
 
@@ -97,6 +100,10 @@ Future<void> setupLocator() async {
       ));
 
   // Usecases
+
+  locator.registerLazySingleton<GetUserByConversationIdUseCase>(() =>
+      GetUserByConversationIdUseCase(
+          userRepository: locator<UserRepository>()));
 
   locator.registerLazySingleton<ClearAllMessageUseCase>(() =>
       ClearAllMessageUseCase(messageRepository: locator<MessageRepository>()));
@@ -167,6 +174,7 @@ Future<void> setupLocator() async {
       loadConversationUseCase: locator<LoadConversationsUseCase>(),
       getCurrentUserUseCase: locator<GetCurrentUserUseCase>(),
       updateUserUseCase: locator<UpdateUserUseCase>(),
+      getUserByConversationIdUseCase: locator<GetUserByConversationIdUseCase>(),
       deleteConversationUseCase: locator<DeleteConversationUseCase>(),
       createNewConversationUseCase: locator<CreateNewConversationUseCase>(),
       signOutUseCase: locator<SignOutUseCase>()));

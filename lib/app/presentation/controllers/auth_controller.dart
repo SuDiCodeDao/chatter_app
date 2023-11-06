@@ -66,6 +66,8 @@ class AuthController extends GetxController {
 
   Future<void> signInWithGoogle() async {
     userEntity.value = await _signInWithGoogleUseCase!.call();
-    Get.toNamed(PageRouteConstants.home);
+    if (userEntity.value.uid != null && userEntity.value.uid != '') {
+      Get.toNamed(PageRouteConstants.home);
+    }
   }
 }

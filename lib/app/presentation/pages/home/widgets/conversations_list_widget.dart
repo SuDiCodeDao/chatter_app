@@ -72,14 +72,15 @@ class ConversationsListWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        conversation.lastMessage ?? '',
+                        conversation.lastMessage ?? 'Chưa có tin nhắn nào',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         softWrap: true,
                       ),
                     ),
-                    Text(formatLastMessageTime(
-                        conversation.lastMessageTime ?? '')),
+                    if (conversation.lastMessageTime != null)
+                      Text(formatLastMessageTime(
+                          conversation.lastMessageTime ?? '')),
                   ],
                 ),
               ),

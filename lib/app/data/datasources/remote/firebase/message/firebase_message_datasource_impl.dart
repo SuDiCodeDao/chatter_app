@@ -7,6 +7,7 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
   final FirebaseFirestore firestore;
 
   FirebaseMessageDataSourceImpl({required this.firestore});
+
   @override
   Future<MessageModel> deleteMessage(
       String conversationId, String messageId) async {
@@ -54,14 +55,18 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
 
     final conversationData = (await conversationRef.get()).data();
     if (conversationData != null) {
-      final List<Map<String, dynamic>> messages =
-          List.from(conversationData['messages']);
-      messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
+      if (conversationData['messages'] != null) {
+        final List<Map<String, dynamic>> messages =
+            List.from(conversationData['messages']);
+        messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
 
-      final messageModels =
-          messages.map((message) => MessageModel.fromMap(message)).toList();
+        final messageModels =
+            messages.map((message) => MessageModel.fromMap(message)).toList();
 
-      return messageModels;
+        return messageModels;
+      } else {
+        return [];
+      }
     }
     return [];
   }
@@ -85,14 +90,7 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
   }
 
   @override
-  Future<int> getUnreadMessagesCount(String conversationId) {
-    // TODO: implement getUnreadMessagesCount
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<MessageModel> reactToMessage(
-      String conversationId, String messageId, String reactionType) {
+  Future<MessageModel> reactToMessage(String messageId) {
     // TODO: implement reactToMessage
     throw UnimplementedError();
   }

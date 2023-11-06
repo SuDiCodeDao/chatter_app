@@ -44,12 +44,17 @@ class ChatController extends GetxController {
   Future<void> loadMessages(String conversationId) async {
     final loadedMessages = await _loadMessagesUseCase.call(conversationId);
 
-    if (loadedMessages != null) {
-      messages.assignAll(loadedMessages);
-
+    if ((loadedMessages ?? []).isNotEmpty) {
+      messages.clear();
+      update();
+      refresh();
+      messages.assignAll(loadedMessages ?? []);
       refresh();
       update();
     } else {
+      messages.clear();
+      update();
+      refresh();
       messages.insert(
           0,
           MessageEntity(
@@ -72,8 +77,9 @@ class ChatController extends GetxController {
           timeStamp: DateTime.now().toLocal().toString(),
           reaction: MessageReaction.none);
       await _sendMessageUseCase.call(conversationId, messageEntity);
-      messages.add(messageEntity);
+      messages.insert(0, messageEntity);
       await handleChatbotResponse(conversationId, messageContent);
+      refresh();
       update();
     }
   }
@@ -83,6 +89,7 @@ class ChatController extends GetxController {
       await _clearAllMessageUseCase(conversationId);
       messages.clear();
       update();
+      refresh();
     } catch (e) {}
   }
 
@@ -140,7 +147,6 @@ class ChatController extends GetxController {
     if (_speechEnable.value) {
       try {
         _lastWords.value = result.recognizedWords;
-        print(lastWords);
       } catch (e) {
         print('Lỗi: $e');
       }

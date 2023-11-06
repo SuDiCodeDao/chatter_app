@@ -10,13 +10,10 @@ abstract class FirebaseMessageDataSource {
 
   Future<void> sendMessage(String conversationId, MessageModel messageModel);
 
-  Future<int> getUnreadMessagesCount(String conversationId);
-
   Future<List<MessageModel>> searchMessages(
       String conversationId, String query);
 
   Future<void> deleteAllMessagesInConversation(String conversationId);
 
-  Future<MessageModel> reactToMessage(
-      String conversationId, String messageId, String reactionType);
+  Future<MessageModel> reactToMessage(String messageId);
 }

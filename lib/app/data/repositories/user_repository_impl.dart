@@ -30,4 +30,16 @@ class UserRepositoryImpl extends UserRepository {
   Future<void> updateUser(UserEntity userEntity) async {
     await firebaseUserDataSource.updateUser(UserModel.fromEntity(userEntity));
   }
+
+  @override
+  Future<UserEntity?> getUserByConversationId(String conversationId) async {
+    final userModel =
+        await firebaseUserDataSource.getUserByConversationId(conversationId);
+
+    if (userModel != null) {
+      return userModel.toEntity();
+    } else {
+      return null;
+    }
+  }
 }

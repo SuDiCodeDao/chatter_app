@@ -1,4 +1,6 @@
+import 'package:chatter_app/app/domain/usecases/auth/get_user_by_conversation_id_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/auth/sign_out_usecase.dart';
+import 'package:chatter_app/app/domain/usecases/auth/update_user_profile_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/chat/create_new_conversation_usecase.dart';
 import 'package:chatter_app/core/constants/page_route_constants.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../domain/entities/conversation_entity.dart';
 import '../../domain/usecases/auth/get_current_user_usecase.dart';
-import '../../domain/usecases/auth/update_user_profile_usecase.dart';
 import '../../domain/usecases/chat/delete_conversation_usecase.dart';
 import '../../domain/usecases/chat/load_conversations_usecase.dart';
 
@@ -21,22 +22,29 @@ class HomeController extends GetxController {
   final Future<SharedPreferences> _pref = SharedPreferences.getInstance();
   LoadConversationsUseCase? _loadConversationsUseCase;
   GetCurrentUserUseCase? _getCurrentUserUseCase;
-
   UpdateUserUseCase? _updateUserUseCase;
+  GetUserByConversationIdUseCase? _getUserByConversationIdUseCase;
   DeleteConversationUseCase? _deleteConversationUseCase;
   final RxString selectedConversationId = "".obs;
-  HomeController(
-      {loadConversationUseCase,
-      signOutUseCase,
-      deleteConversationUseCase,
-      createNewConversationUseCase,
-      getCurrentUserUseCase,
-      updateUserUseCase}) {
+
+  HomeController({
+    loadConversationUseCase,
+    signOutUseCase,
+    updateUserUseCase,
+    getLastMessageUseCase,
+    getUserByConversationIdUseCase,
+    deleteConversationUseCase,
+    createNewConversationUseCase,
+    getCurrentUserUseCase,
+  }) {
     _loadConversationsUseCase = loadConversationUseCase;
+
+    _updateUserUseCase = _updateUserUseCase;
     _createNewConversationUseCase = createNewConversationUseCase;
     _getCurrentUserUseCase = getCurrentUserUseCase;
-    _updateUserUseCase = updateUserUseCase;
+
     _signOutUseCase = signOutUseCase;
+    _getUserByConversationIdUseCase = getUserByConversationIdUseCase;
     _deleteConversationUseCase = deleteConversationUseCase;
   }
 
@@ -91,6 +99,7 @@ class HomeController extends GetxController {
         await _updateUserUseCase!(user);
         await _createNewConversationUseCase?.call(newConversation);
         update();
+        refresh();
       }
     }
   }

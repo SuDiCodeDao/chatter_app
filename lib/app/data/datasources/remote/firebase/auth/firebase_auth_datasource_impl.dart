@@ -9,8 +9,9 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
   final FirebaseAuth auth;
   String? smsCode;
   String? verificationId;
+  final GoogleSignIn googleSignIn;
 
-  FirebaseAuthDataSourceImpl({required this.auth});
+  FirebaseAuthDataSourceImpl({required this.googleSignIn, required this.auth});
 
   @override
   Future<UserModel> getCurrentUser() async {
@@ -43,28 +44,38 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
 
   @override
   Future<UserModel> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final emptyUserModel =
+        UserModel(uid: '', email: '', displayName: '', phone: '', photoUrl: '');
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    final user = userCredential.user;
-    return UserModel(
-      uid: user!.uid,
-      email: user.email,
-      displayName: user.displayName,
-      phone: user.phoneNumber,
-      photoUrl: user.photoURL,
-    );
+
+    if (googleAuth != null) {
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final userCredential = await auth.signInWithCredential(credential);
+      final user = userCredential.user;
+      if (user != null) {
+        return UserModel(
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            phone: user.phoneNumber,
+            photoUrl: user.photoURL);
+      } else {
+        return emptyUserModel;
+      }
+    } else {
+      return emptyUserModel;
+    }
   }
 
   @override
   Future<void> signOut() async {
     if (await isSignedIn()) {
+      await googleSignIn.signOut();
       await auth.signOut();
     }
   }

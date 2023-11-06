@@ -23,7 +23,6 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserEntity> signInWithGoogle() async {
     var userModel = await firebaseAuthDataSource.signInWithGoogle();
-
     UserModel? existingUser =
         await firebaseUserDataSource.getUserByEmail(userModel.email!);
     if (existingUser != null) {
@@ -33,7 +32,9 @@ class AuthRepositoryImpl implements AuthRepository {
       return existingUser.toEntity();
     } else {
       if (shouldUseFirestore) {
-        await firebaseUserDataSource.addUser(userModel);
+        if (userModel.uid != '' && userModel.uid != null) {
+          await firebaseUserDataSource.addUser(userModel);
+        }
       }
       return userModel.toEntity();
     }

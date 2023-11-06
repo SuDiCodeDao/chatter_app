@@ -10,5 +10,6 @@ abstract class FirebaseUserDataSource {
 
   Future<UserModel?> getUserByPhone(String phone);
 
+  Future<UserModel?> getUserByConversationId(String conversationId);
   Future<void> deleteUser(String uid);
 }

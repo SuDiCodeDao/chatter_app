@@ -58,6 +58,7 @@ class GptDataSourceImpl extends GptDataSource {
     }
   }
 
+  @override
   bool isImageGenerationRequest(String prompt) {
     return prompt.toLowerCase().contains("tạo hình ảnh") ||
         prompt.toLowerCase().contains("ảnh") ||
@@ -66,6 +67,7 @@ class GptDataSourceImpl extends GptDataSource {
         prompt.toLowerCase().contains("visual");
   }
 
+  @override
   Map<String, dynamic> buildRequestObject(String prompt, bool isImageRequest) {
     if (isImageRequest) {
       return {
@@ -86,6 +88,7 @@ class GptDataSourceImpl extends GptDataSource {
     }
   }
 
+  @override
   MessageModel processTextResponse(dynamic jsonResponse) {
     final text = jsonResponse['choices'][0]['text'];
 
@@ -98,6 +101,7 @@ class GptDataSourceImpl extends GptDataSource {
     );
   }
 
+  @override
   MessageModel processImageResponse(dynamic jsonResponse) {
     if (jsonResponse.containsKey('data') && jsonResponse['data'] is List) {
       final List<dynamic> imageDataList = jsonResponse['data'] as List<dynamic>;

@@ -67,4 +67,25 @@ class FirebaseUserDataSourceImpl implements FirebaseUserDataSource {
     }
     return null;
   }
+
+  @override
+  Future<UserModel?> getUserByConversationId(String conversationId) async {
+    final conversationDocument =
+        await firestore.collection('conversations').doc(conversationId).get();
+
+    if (conversationDocument.exists) {
+      final conversationData = conversationDocument.data();
+      final String userId = conversationData!['userId'];
+
+      final userDocument =
+          await firestore.collection('users').doc(userId).get();
+
+      if (userDocument.exists) {
+        final userData = userDocument.data();
+        return UserModel.fromMap(userData!);
+      }
+    }
+
+    return null;
+  }
 }

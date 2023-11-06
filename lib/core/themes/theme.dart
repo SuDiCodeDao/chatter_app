@@ -6,7 +6,7 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData lightTheme = ThemeData(
-      primaryColor: Colors.red,
+      primaryColor: Colors.lightBlueAccent,
       brightness: Brightness.light,
       textTheme: AppTextTheme.lightTextTheme,
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -14,7 +14,7 @@ class AppTheme {
       ),
       colorScheme: const ColorScheme.light(background: Colors.white));
   static ThemeData darkTheme = ThemeData(
-      // primaryColor: Colors.black,
+      primaryColor: Colors.lightBlueAccent,
       brightness: Brightness.dark,
       textTheme: AppTextTheme.darkTextTheme,
       colorScheme: const ColorScheme.dark(background: Colors.black));

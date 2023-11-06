@@ -25,7 +25,6 @@ class MessageRepositoryImpl extends MessageRepository {
           timeStamp: DateTime.now().toLocal().toString())
     ];
   }
-  //luc dau ham nay tra ve list,messageenitity và có thể là rỗng..
 
   @override
   Future<void> sendMessage(
