@@ -87,7 +87,7 @@ class HomeController extends GetxController {
     final conversationId = const Uuid().v4();
     if (_getCurrentUserUseCase != null) {
       final user = await _getCurrentUserUseCase!(userId);
-      if (!user.conversationIds!.contains(conversationId)) {
+      if (user.conversationIds?.contains(conversationId) == false) {
         user.conversationIds?.add(conversationId);
 
         final newConversation = ConversationEntity(
@@ -96,8 +96,13 @@ class HomeController extends GetxController {
             userId: userId,
             createAt: DateTime.now().toLocal().toString());
         conversations.add(newConversation);
-        await _updateUserUseCase!(user);
-        await _createNewConversationUseCase?.call(newConversation);
+        if (_updateUserUseCase != null) {
+          await _updateUserUseCase!(user);
+        }
+        if (_createNewConversationUseCase != null) {
+          await _createNewConversationUseCase!(newConversation);
+        }
+
         update();
         refresh();
       }
@@ -115,10 +120,15 @@ class HomeController extends GetxController {
     }
   }
 
-  void navigateToChat(ConversationEntity conversation) {
+  Future<void> navigateToChat(
+      ConversationEntity conversation, String userId) async {
     if (conversation.id != null && conversation.id!.isNotEmpty) {
       selectedConversationId(conversation.id);
-      Get.toNamed('${PageRouteConstants.chat}/${conversation.id}');
+      final rs =
+          await Get.toNamed('${PageRouteConstants.chat}/${conversation.id}');
+      if (rs != null && rs == true) {
+        loadConversations(userId);
+      }
     }
   }
 }

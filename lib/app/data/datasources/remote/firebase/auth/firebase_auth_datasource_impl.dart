@@ -80,8 +80,6 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
     }
   }
 
-  Stream<User?> get authStateChange => auth.authStateChanges();
-
   @override
   Future<UserModel> verifyOTP(String verificationCode) async {
     PhoneAuthCredential credential = PhoneAuthProvider.credential(

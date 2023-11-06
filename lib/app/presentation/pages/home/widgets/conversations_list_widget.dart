@@ -32,7 +32,7 @@ class ConversationsListWidget extends StatelessWidget {
           final conversation = conversations[index];
           return GestureDetector(
             onTap: () {
-              homeController.navigateToChat(conversation);
+              homeController.navigateToChat(conversation, userId);
             },
             child: Card(
               borderOnForeground: true,
@@ -81,6 +81,9 @@ class ConversationsListWidget extends StatelessWidget {
                     if (conversation.lastMessageTime != null)
                       Text(formatLastMessageTime(
                           conversation.lastMessageTime ?? '')),
+                    Text(
+                      formatLastMessageTime(conversation.lastMessageTime ?? ''),
+                    ),
                   ],
                 ),
               ),

@@ -11,21 +11,22 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-        designSize: const Size(393, 830),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, _) {
-          return SafeArea(
-            child: GetMaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Chatter Bot',
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: ThemeMode.system,
-              initialRoute: PageRouteConstants.login,
-              getPages: AppRoute.route,
-            ),
-          );
-        });
+      designSize: const Size(393, 830),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, _) {
+        return SafeArea(
+          child: GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Chatter Bot',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: ThemeMode.system,
+            initialRoute: PageRouteConstants.login,
+            getPages: AppRoute.route,
+          ),
+        );
+      },
+    );
   }
 }

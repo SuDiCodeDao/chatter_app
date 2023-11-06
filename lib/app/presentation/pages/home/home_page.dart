@@ -11,6 +11,7 @@ class HomePage extends StatelessWidget {
 
   final _homeController = locator<HomeController>();
   final _authController = locator<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,10 +26,11 @@ class HomePage extends StatelessWidget {
                   children: [
                     ClipOval(
                       child: Image.network(
-                          _authController.userEntity.value.photoUrl!),
+                          _authController.userEntity.value.photoUrl ?? ''),
                     ),
+                    /// hạn chế dùng ! nên dùng ??
                     Text(
-                      _authController.userEntity.value.displayName!,
+                      _authController.userEntity.value.displayName ?? '',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -65,12 +67,12 @@ class HomePage extends StatelessWidget {
           authController: _authController, homeController: _homeController),
       body: HomePageBodyWidget(
           homeController: _homeController,
-          userId: _authController.userEntity.value.uid!),
+          userId: _authController.userEntity.value.uid ?? ''),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.lightBlueAccent,
           onPressed: () async {
             await _homeController
-                .createAndNavigateToChat(_authController.userEntity.value.uid!);
+                .createAndNavigateToChat(_authController.userEntity.value.uid ?? '');
           },
           child: const Icon(
             Icons.add,

@@ -28,7 +28,7 @@ class ChatPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
           onPressed: () {
-            Get.back();
+            Get.back<bool?>(result: true);
           },
         ),
       ),

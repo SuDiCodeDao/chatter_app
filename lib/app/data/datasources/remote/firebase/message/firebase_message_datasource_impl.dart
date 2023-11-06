@@ -65,10 +65,21 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
 
         return messageModels;
       } else {
-        return [];
+        if (conversationData['messages'] != null) {
+          final List<Map<String, dynamic>> messages =
+              List.from(conversationData['messages']);
+          messages.sort((a, b) => b['timeStamp'].compareTo(a['timeStamp']));
+
+          final messageModels =
+              messages.map((message) => MessageModel.fromMap(message)).toList();
+
+          return messageModels;
+        } else {
+          return [];
+        }
       }
     }
-    return [];
+    return null;
   }
 
   @override
@@ -146,6 +157,12 @@ class FirebaseMessageDataSourceImpl extends FirebaseMessageDataSource {
           await deleteMessage(conversationId, message.id!);
         }
       }
+      final collectionRef =
+          firestore.collection('conversations').doc(conversationId);
+      await collectionRef.update({
+        'lastMessage': '',
+        'lastMessageTime': '',
+      });
     } catch (e) {
       throw Exception('Failed to delete all messages: $e');
     }

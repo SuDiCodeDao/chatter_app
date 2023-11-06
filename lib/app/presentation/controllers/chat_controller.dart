@@ -42,6 +42,7 @@ class ChatController extends GetxController {
   }
 
   Future<void> loadMessages(String conversationId) async {
+    debugPrint('call loadMessages $conversationId');
     final loadedMessages = await _loadMessagesUseCase.call(conversationId);
 
     if ((loadedMessages ?? []).isNotEmpty) {
