@@ -48,14 +48,10 @@ class ConversationsListWidget extends StatelessWidget {
                 ),
                 trailing: IconButton(
                   onPressed: () async {
-                    if (!homeController.isDeletingConversation.value) {
-                      homeController.isDeletingConversation.value = true;
-                      await homeController.deleteConversation(
-                        userId,
-                        conversation.id!,
-                      );
-                      homeController.isDeletingConversation.value = false;
-                    }
+                    await homeController.deleteConversation(
+                      userId,
+                      conversation.id!,
+                    );
                   },
                   icon: Stack(
                     children: [

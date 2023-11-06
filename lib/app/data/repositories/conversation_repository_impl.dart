@@ -40,8 +40,10 @@ class ConversationRepositoryImpl extends ConversationRepository {
 
   @override
   Future<void> deleteConversation(String conversationId) async {
-    await firebaseConversationDataSource.deleteConversation(conversationId);
-    await firebaseMessageDataSource
-        .deleteAllMessagesInConversation(conversationId);
+    try {
+      await firebaseConversationDataSource.deleteConversation(conversationId);
+    } catch (e) {
+      print('Lỗi khi xóa cuộc trò chuyện: $e');
+    }
   }
 }

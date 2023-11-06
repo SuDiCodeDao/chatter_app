@@ -22,8 +22,6 @@ class ChatController extends GetxController {
   RxList<MessageEntity> messages = <MessageEntity>[].obs;
   final TextEditingController messageController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
-  final RxString _lastWords = ''.obs;
-  final _speechEnable = false.obs;
 
   ChatController(
       {required SendMessageUseCase sendMessageUseCase,
@@ -116,45 +114,60 @@ class ChatController extends GetxController {
   void stopListening() async {
     await _speechToText.stop();
     isListening.value = false;
+    update();
   }
 
   Future<void> startListening(String conversationId) async {
-    if (_speechEnable.value) {
-      await _speechToText.listen(
-        onResult: _onSpeechResult,
-        cancelOnError: (error) {
-          print('Lỗi khi lắng nghe giọng nói: $error'); // In ra thông báo lỗi
-        },
-      );
-      isListening.value = true;
-    } else {
-      await _initSpeech();
-      if (_speechEnable.value) {
-        await _speechToText.listen(
-          onResult: _onSpeechResult,
-        );
-        isListening.value = true;
-      } else {
-        isListening.value = false;
-      }
-    }
+    isListening.value = true;
+    await _speechToText.listen(
+      onResult: (result) => _onSpeechResult(conversationId, result),
+      cancelOnError: false,
+    );
+    update();
   }
 
   Future<void> _initSpeech() async {
-    _speechEnable.value = await _speechToText.initialize();
-  }
-
-  void _onSpeechResult(SpeechRecognitionResult result) {
-    if (_speechEnable.value) {
-      try {
-        _lastWords.value = result.recognizedWords;
-      } catch (e) {
-        print('Lỗi: $e');
-      }
+    bool available = await _speechToText.initialize(
+      onStatus: (status) {
+        print('Status: $status');
+        if (status == 'notListening') {
+          isListening.value = false;
+          update();
+        }
+      },
+      onError: (error) {
+        print('Error: $error');
+        isListening.value = false;
+        _speechToText.stop();
+        update();
+      },
+    );
+    if (available) {
+      print('Speech to text available');
+    } else {
+      print('Speech to text not available');
     }
   }
 
-  bool get isSpeechEnabled => _speechEnable.value;
-
-  String get lastWords => _lastWords.value;
+  Future<void> _onSpeechResult(
+      String conversationId, SpeechRecognitionResult result) async {
+    try {
+      if (result.recognizedWords.isNotEmpty) {
+        var messageEntity = MessageEntity(
+          id: const Uuid().v1(),
+          content: result.recognizedWords,
+          role: 'user',
+          timeStamp: DateTime.now().toLocal().toString(),
+          reaction: MessageReaction.none,
+        );
+        await _sendMessageUseCase.call(conversationId, messageEntity);
+        messages.insert(0, messageEntity);
+        handleChatbotResponse(conversationId, result.recognizedWords);
+        refresh();
+        update();
+      }
+    } catch (e) {
+      print('Lỗi: $e');
+    }
+  }
 }

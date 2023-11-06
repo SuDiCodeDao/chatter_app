@@ -17,13 +17,18 @@ class FirebaseConversationDataSourceImpl
 
   @override
   Future<ConversationModel?> deleteConversation(String conversationId) async {
-    final docRef = firestore.collection('conversations').doc(conversationId);
-    final conversationData = await docRef.get();
+    try {
+      final docRef = firestore.collection('conversations').doc(conversationId);
+      final conversationData = await docRef.get();
 
-    if (conversationData.exists) {
-      await docRef.delete();
-      return ConversationModel.fromMap(conversationData.data()!);
-    } else {
+      if (conversationData.exists) {
+        await docRef.delete();
+        return ConversationModel.fromMap(conversationData.data()!);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Lỗi khi xóa cuộc trò chuyện: $e');
       return null;
     }
   }

@@ -110,13 +110,20 @@ class HomeController extends GetxController {
   }
 
   Future<void> deleteConversation(String userId, String conversationId) async {
-    final user = await _getCurrentUserUseCase!(userId);
-    if (user.conversationIds!.contains(conversationId)) {
-      user.conversationIds?.remove(conversationId);
-      await _deleteConversationUseCase!.call(conversationId);
-      await _updateUserUseCase!(user);
-      conversations
-          .removeWhere((conversation) => conversation.id == conversationId);
+    try {
+      if (_getCurrentUserUseCase != null) {
+        final user = await _getCurrentUserUseCase!(userId);
+        if (user.conversationIds!.contains(conversationId)) {
+          user.conversationIds?.remove(conversationId);
+          await _deleteConversationUseCase!(conversationId);
+          conversations
+              .removeWhere((conversation) => conversation.id == conversationId);
+          await _updateUserUseCase!(user);
+        }
+      }
+    } catch (e, stackTrace) {
+      print('Lỗi xóa cuộc trò chuyện: $e');
+      print('Stack trace: $stackTrace');
     }
   }
 
