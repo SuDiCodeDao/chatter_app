@@ -28,13 +28,17 @@ class MainApp extends StatelessWidget {
                     theme: AppTheme.lightTheme,
                     darkTheme: AppTheme.darkTheme,
                     themeMode: ThemeMode.system,
-                    initialRoute: user == null
-                        ? PageRouteConstants.login
-                        : PageRouteConstants.home,
+                    // initialRoute: PageRouteConstants.home,
+                    initialRoute: user == null ? PageRouteConstants.login : PageRouteConstants.home,
                     getPages: AppRoute.route,
                   );
                 } else {
-                  return const CircularProgressIndicator();
+                  return const ColoredBox(
+                    color: Colors.white,
+                    child:  Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
                 }
               }),
         );
