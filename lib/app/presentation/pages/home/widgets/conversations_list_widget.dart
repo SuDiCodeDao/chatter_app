@@ -77,9 +77,6 @@ class ConversationsListWidget extends StatelessWidget {
                     if (conversation.lastMessageTime != null)
                       Text(formatLastMessageTime(
                           conversation.lastMessageTime ?? '')),
-                    Text(
-                      formatLastMessageTime(conversation.lastMessageTime ?? ''),
-                    ),
                   ],
                 ),
               ),

@@ -11,33 +11,23 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
     return ScreenUtilInit(
       designSize: const Size(393, 830),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, _) {
         return SafeArea(
-          child: StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.active) {
-                  final user = snapshot.data;
-                  return GetMaterialApp(
-                    debugShowCheckedModeBanner: false,
-                    title: 'Chatter Bot',
-                    theme: AppTheme.lightTheme,
-                    darkTheme: AppTheme.darkTheme,
-                    themeMode: ThemeMode.system,
-                    initialRoute: user == null
-                        ? PageRouteConstants.login
-                        : PageRouteConstants.home,
-                    getPages: AppRoute.route,
-                  );
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              }),
-        );
+            child: GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Chatter Bot',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.system,
+          initialRoute:
+              user == null ? PageRouteConstants.login : PageRouteConstants.home,
+          getPages: AppRoute.route,
+        ));
       },
     );
   }

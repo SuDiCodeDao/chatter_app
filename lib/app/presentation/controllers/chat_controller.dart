@@ -118,15 +118,17 @@ class ChatController extends GetxController {
   }
 
   Future<void> startListening(String conversationId) async {
-    isListening.value = true;
-    await _speechToText.listen(
-      onResult: (result) => _onSpeechResult(conversationId, result),
-      cancelOnError: false,
-    );
-    update();
+    if (await _initSpeech()) {
+      isListening.value = true;
+      await _speechToText.listen(
+        onResult: (result) => _onSpeechResult(conversationId, result),
+        cancelOnError: false,
+      );
+      update();
+    }
   }
 
-  Future<void> _initSpeech() async {
+  Future<bool> _initSpeech() async {
     bool available = await _speechToText.initialize(
       onStatus: (status) {
         print('Status: $status');
@@ -147,24 +149,27 @@ class ChatController extends GetxController {
     } else {
       print('Speech to text not available');
     }
+    return available;
   }
 
   Future<void> _onSpeechResult(
       String conversationId, SpeechRecognitionResult result) async {
     try {
-      if (result.recognizedWords.isNotEmpty) {
-        var messageEntity = MessageEntity(
-          id: const Uuid().v1(),
-          content: result.recognizedWords,
-          role: 'user',
-          timeStamp: DateTime.now().toLocal().toString(),
-          reaction: MessageReaction.none,
-        );
-        await _sendMessageUseCase.call(conversationId, messageEntity);
-        messages.insert(0, messageEntity);
-        handleChatbotResponse(conversationId, result.recognizedWords);
-        refresh();
-        update();
+      if (_speechToText.isAvailable && _speechToText.isListening) {
+        if (result.recognizedWords.isNotEmpty) {
+          var messageEntity = MessageEntity(
+            id: const Uuid().v1(),
+            content: result.recognizedWords,
+            role: 'user',
+            timeStamp: DateTime.now().toLocal().toString(),
+            reaction: MessageReaction.none,
+          );
+          await _sendMessageUseCase.call(conversationId, messageEntity);
+          messages.insert(0, messageEntity);
+          handleChatbotResponse(conversationId, result.recognizedWords);
+          refresh();
+          update();
+        }
       }
     } catch (e) {
       print('Lỗi: $e');

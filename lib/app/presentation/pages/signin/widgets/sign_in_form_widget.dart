@@ -73,9 +73,8 @@ class SignInFormWidget extends StatelessWidget {
                   Expanded(child: Text('Đăng nhập với Google'))
                 ]),
               ),
-              _authController.isLoading.value
-                  ? const LoadingWidget()
-                  : const SizedBox(),
+              if (_authController.isLoading.value)
+                const Positioned.fill(child: LoadingWidget())
             ],
           ),
         ]),

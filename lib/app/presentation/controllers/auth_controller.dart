@@ -21,12 +21,17 @@ class AuthController extends GetxController {
     uid: 'cIKzo1Op9UTdX6IJnYMEfjiC3mt2',
     email: 'sunguyen.dev@gmail.com',
     phone: '',
-    photoUrl: 'https://lh3.googleusercontent.com/a/ACg8ocI2XE5ya--r7HUzz7WNEnPLP_klLCSOPt86hRUTa_zj=s96-c',
+    photoUrl:
+        'https://lh3.googleusercontent.com/a/ACg8ocI2XE5ya--r7HUzz7WNEnPLP_klLCSOPt86hRUTa_zj=s96-c',
   ).obs;
   final otpInputController = TextEditingController();
   final phoneInputController = TextEditingController();
 
-  AuthController({signInWithGoogleUseCase, sendOtpUseCase, verifyOTPUseCase, checkLoginUseCase}) {
+  AuthController(
+      {signInWithGoogleUseCase,
+      sendOtpUseCase,
+      verifyOTPUseCase,
+      checkLoginUseCase}) {
     _signInWithGoogleUseCase = signInWithGoogleUseCase;
     _sendOtpUseCase = sendOtpUseCase;
     _verifyOTPUseCase = verifyOTPUseCase;
@@ -67,9 +72,11 @@ class AuthController extends GetxController {
   }
 
   Future<void> signInWithGoogle() async {
+    isLoading.value = true;
     userEntity.value = await _signInWithGoogleUseCase!.call();
     if (userEntity.value.uid != null && userEntity.value.uid != '') {
       Get.toNamed(PageRouteConstants.home);
     }
+    isLoading.value = false;
   }
 }
