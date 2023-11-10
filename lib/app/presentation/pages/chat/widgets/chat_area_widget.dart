@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 
 import '../../../../domain/entities/message_entity.dart';
@@ -27,7 +28,10 @@ class ChatAreaWidget extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: SpinKitCubeGrid(
+              color: Colors.lightBlueAccent,
+              size: 50.0,
+            ),
           );
         }
 

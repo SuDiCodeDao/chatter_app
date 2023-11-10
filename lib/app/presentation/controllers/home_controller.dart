@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chatter_app/app/domain/usecases/auth/get_user_by_conversation_id_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:chatter_app/app/domain/usecases/auth/update_user_profile_usecase.dart';
@@ -113,14 +115,23 @@ class HomeController extends GetxController {
     try {
       if (_getCurrentUserUseCase != null) {
         final user = await _getCurrentUserUseCase!(userId);
-        if (user.conversationIds!.contains(conversationId)) {
+        print('conversationIds của người dùng: ${user.conversationIds}');
+        print('conversationId cần xóa: $conversationId');
+        if (user.conversationIds?.contains(conversationId) == true) {
           user.conversationIds?.remove(conversationId);
           await _deleteConversationUseCase!(conversationId);
           conversations
               .removeWhere((conversation) => conversation.id == conversationId);
           await _updateUserUseCase!(user);
+        } else {
+          print(
+              'Cuộc trò chuyện không tồn tại trong danh sách của người dùng.');
         }
+      } else {
+        print('Các use case không được khởi tạo đúng cách.');
       }
+    } on SocketException catch (specificException) {
+      print('Lỗi cụ thể xóa cuộc trò chuyện: $specificException');
     } catch (e, stackTrace) {
       print('Lỗi xóa cuộc trò chuyện: $e');
       print('Stack trace: $stackTrace');
@@ -131,8 +142,8 @@ class HomeController extends GetxController {
       ConversationEntity conversation, String userId) async {
     if (conversation.id != null && conversation.id!.isNotEmpty) {
       selectedConversationId(conversation.id);
-      final rs =
-          await Get.toNamed('${PageRouteConstants.chat}/${conversation.id}');
+      final rs = await Get.offAndToNamed(
+          '${PageRouteConstants.chat}/${conversation.id}');
       if (rs != null && rs == true) {
         loadConversations(userId);
       }

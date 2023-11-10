@@ -66,5 +66,7 @@ flutter {
 }
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-providerinstaller:17.0.0'
+
     implementation 'androidx.multidex:multidex:2.0.1'
 }

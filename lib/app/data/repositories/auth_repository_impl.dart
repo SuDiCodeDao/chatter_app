@@ -26,17 +26,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
     UserModel? existingUser =
         await firebaseUserDataSource.getUserByEmail(userModel.email!);
-    if (existingUser != null) {
-      existingUser.displayName = userModel.displayName;
-      existingUser.photoUrl = userModel.photoUrl;
-      await firebaseUserDataSource.updateUser(existingUser);
-      return existingUser.toEntity();
-    } else {
-      if (shouldUseFirestore) {
-        await firebaseUserDataSource.addUser(userModel);
-      }
-      return userModel.toEntity();
+
+    if (shouldUseFirestore) {
+      await firebaseUserDataSource.addUser(userModel);
     }
+    return userModel.toEntity();
   }
 
   @override

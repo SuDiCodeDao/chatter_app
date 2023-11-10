@@ -12,18 +12,13 @@ import '../../domain/usecases/auth/verify_otp_usecase.dart';
 class AuthController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isLoggedIn = false.obs;
+  final RxBool isAuthenticating = false.obs;
 
   SignInWithGoogleUseCase? _signInWithGoogleUseCase;
   SendOtpUseCase? _sendOtpUseCase;
   VerifyOTPUseCase? _verifyOTPUseCase;
   CheckLoginUseCase? _checkLoginUseCase;
-  Rx<UserEntity> userEntity = UserEntity(
-    uid: 'cIKzo1Op9UTdX6IJnYMEfjiC3mt2',
-    email: 'sunguyen.dev@gmail.com',
-    phone: '',
-    photoUrl:
-        'https://lh3.googleusercontent.com/a/ACg8ocI2XE5ya--r7HUzz7WNEnPLP_klLCSOPt86hRUTa_zj=s96-c',
-  ).obs;
+  Rx<UserEntity> userEntity = UserEntity().obs;
   final otpInputController = TextEditingController();
   final phoneInputController = TextEditingController();
 
@@ -41,42 +36,35 @@ class AuthController extends GetxController {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   Future<void> sendOTP(String phoneNumber) async {
+    isAuthenticating.value = true;
     if (phoneNumber.startsWith("0")) {
       phoneNumber = "+84${phoneNumber.substring(1)}";
     }
-    isLoading.value = true;
+
     await _sendOtpUseCase!.call(phoneNumber);
     Get.toNamed(PageRouteConstants.otp);
-    isLoading.value = false;
+    isAuthenticating.value = false;
   }
 
   Future<UserEntity?> verifyOTP(String verificationCode) async {
+    isAuthenticating.value = true;
     UserEntity? result = await _verifyOTPUseCase?.call(verificationCode);
     if (result != null) {
       userEntity.value = result;
-      isLoading.value = true;
-      Get.toNamed(PageRouteConstants.home);
-      isLoading.value = false;
+
+      Get.offAndToNamed(PageRouteConstants.home);
     }
+    isAuthenticating.value = false;
 
     return null;
   }
 
-  Future<void> checkLoginStatus() async {
-    var result = await _checkLoginUseCase!.call();
-    if (result) {
-      isLoggedIn.value = false;
-    } else {
-      isLoggedIn.value = true;
-    }
-  }
-
   Future<void> signInWithGoogle() async {
-    isLoading.value = true;
+    isAuthenticating.value = true;
     userEntity.value = await _signInWithGoogleUseCase!.call();
     if (userEntity.value.uid != null && userEntity.value.uid != '') {
-      Get.toNamed(PageRouteConstants.home);
+      Get.offAndToNamed(PageRouteConstants.home);
     }
-    isLoading.value = false;
+    isAuthenticating.value = false;
   }
 }

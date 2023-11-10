@@ -22,7 +22,7 @@ class ChatController extends GetxController {
   RxList<MessageEntity> messages = <MessageEntity>[].obs;
   final TextEditingController messageController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
-
+  RxBool isSpeechAvailable = false.obs;
   ChatController(
       {required SendMessageUseCase sendMessageUseCase,
       required ReceiveChatbotResponseUseCase receiveChatbotResponseUseCase,
@@ -34,8 +34,9 @@ class ChatController extends GetxController {
         _loadMessagesUseCase = loadMessagesUseCase;
 
   @override
-  void onInit() {
+  void onReady() {
     super.onInit();
+    print('onInit called');
     _initSpeech();
   }
 
@@ -57,7 +58,8 @@ class ChatController extends GetxController {
       messages.insert(
           0,
           MessageEntity(
-              content: 'Xin chao toi la chatbot',
+              content:
+                  'Xin chào, tôi là AI siu thông minh. Rất vui được giúp bạn... :))',
               role: 'gpt',
               timeStamp: DateTime.now().toLocal().toString()));
       refresh();
@@ -112,24 +114,28 @@ class ChatController extends GetxController {
   }
 
   void stopListening() async {
-    await _speechToText.stop();
-    isListening.value = false;
-    update();
-  }
-
-  Future<void> startListening(String conversationId) async {
-    if (await _initSpeech()) {
-      isListening.value = true;
-      await _speechToText.listen(
-        onResult: (result) => _onSpeechResult(conversationId, result),
-        cancelOnError: false,
-      );
+    if (isListening.value) {
+      await _speechToText.stop();
+      isListening.value = false;
       update();
     }
   }
 
+  Future<void> startListening(String conversationId) async {
+    isListening.value = true;
+    if (await _initSpeech()) {
+      await _speechToText.listen(
+          onResult: (result) => _onSpeechResult(conversationId, result),
+          cancelOnError: true,
+          listenFor: const Duration(seconds: 10));
+      update();
+    } else {
+      print('Speech to text not available');
+    }
+  }
+
   Future<bool> _initSpeech() async {
-    bool available = await _speechToText.initialize(
+    isSpeechAvailable.value = await _speechToText.initialize(
       onStatus: (status) {
         print('Status: $status');
         if (status == 'notListening') {
@@ -138,18 +144,14 @@ class ChatController extends GetxController {
         }
       },
       onError: (error) {
-        print('Error: $error');
+        print('Error: ${error.errorMsg}');
         isListening.value = false;
         _speechToText.stop();
         update();
       },
     );
-    if (available) {
-      print('Speech to text available');
-    } else {
-      print('Speech to text not available');
-    }
-    return available;
+    print('isSpeechAvailable: ${isSpeechAvailable.value}');
+    return isSpeechAvailable.value;
   }
 
   Future<void> _onSpeechResult(

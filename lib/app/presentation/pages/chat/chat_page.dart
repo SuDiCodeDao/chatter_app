@@ -1,5 +1,6 @@
 import 'package:chatter_app/app/presentation/controllers/chat_controller.dart';
 import 'package:chatter_app/app/presentation/controllers/home_controller.dart';
+import 'package:chatter_app/core/constants/page_route_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,7 +20,10 @@ class ChatPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.edit))],
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.menu))
+        ],
         centerTitle: true,
         title: Text(_homeController
             .selectConversation(_homeController.selectedConversationId.value)
@@ -28,7 +32,7 @@ class ChatPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
           onPressed: () {
-            Get.back<bool?>(result: true);
+            Get.offAndToNamed(PageRouteConstants.home);
           },
         ),
       ),

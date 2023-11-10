@@ -10,10 +10,7 @@ class FirebaseUserDataSourceImpl implements FirebaseUserDataSource {
 
   @override
   Future<void> addUser(UserModel userModel) async {
-    await firestore
-        .collection('users')
-        .doc(userModel.uid)
-        .set(userModel.toMap());
+    await firestore.collection('users').add(userModel.toMap());
   }
 
   @override

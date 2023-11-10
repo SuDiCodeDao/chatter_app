@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../controllers/home_controller.dart';
 import 'conversations_list_widget.dart';
@@ -20,7 +21,10 @@ class HomePageBodyWidget extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: SpinKitCubeGrid(
+              color: Colors.lightBlueAccent,
+              size: 50.0,
+            ),
           );
         } else if (snapshot.hasError) {
           return const Center(

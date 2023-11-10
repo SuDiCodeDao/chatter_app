@@ -53,15 +53,7 @@ class ConversationsListWidget extends StatelessWidget {
                       conversation.id!,
                     );
                   },
-                  icon: Stack(
-                    children: [
-                      if (homeController.isDeletingConversation.value)
-                        const Positioned.fill(
-                          child: CircularProgressIndicator(),
-                        ),
-                      const Icon(Icons.delete),
-                    ],
-                  ),
+                  icon: const Icon(Icons.delete),
                 ),
                 subtitle: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
